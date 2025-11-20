@@ -1,2 +1,2 @@
-# Wery-sane-final-project
-UwU
+# Ordayna
+This is le school project
