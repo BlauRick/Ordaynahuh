@@ -24,10 +24,10 @@ DELIMITER ;
 
 CREATE OR REPLACE TABLE foadatbazis.users ( 
 	id                   INT UNSIGNED   NOT NULL AUTO_INCREMENT  PRIMARY KEY,
-	display_name         VARCHAR(200)    NOT NULL   ,
-	email                VARCHAR(254)   UNIQUE NOT NULL   ,
-	password_hash        CHAR(128)    NOT NULL   ,
-	salt                 CHAR(80) NOT NULL,
+	display_name         VARCHAR(200)   NOT NULL,
+	email                VARCHAR(254)   UNIQUE NOT NULL,
+	phone_number         VARCHAR(15),
+	password_hash        BINARY(60)     NOT NULL,
 	CONSTRAINT users_email UNIQUE ( email ) 
  ) engine=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
 
