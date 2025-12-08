@@ -105,6 +105,90 @@ switch ($req_uri[1]) {
                 break;
         }
         break;
+    case "change_disp_name":
+        if ($_SERVER["REQUEST_METHOD"] != "POST") {
+            http_response_code(405);
+            break;
+        }
+        $res = $user_controller->changeDisplayName();
+        switch ($res) {
+            case ChangeUserRet::success:
+                http_response_code(204);
+                break;
+            case ChangeUserRet::bad_request:
+                http_response_code(400);
+                echo "Bad request";
+                break;
+            case ChangeUserRet::user_does_not_exist:
+                http_response_code(400);
+                echo "User does not exist";
+                break;
+            case ChangeUserRet::unauthorised:
+                http_response_code(403);
+                echo "Incorrect email and password pair";
+                break;
+            case ChangeUserRet::unexpected_error:
+                http_response_code(400);
+                echo "Unexpected error";
+                break;
+        }
+        break;
+    case "change_phone_number":
+        if ($_SERVER["REQUEST_METHOD"] != "POST") {
+            http_response_code(405);
+            break;
+        }
+        $res = $user_controller->changePhoneNumber();
+        switch ($res) {
+            case ChangeUserRet::success:
+                http_response_code(204);
+                break;
+            case ChangeUserRet::bad_request:
+                http_response_code(400);
+                echo "Bad request";
+                break;
+            case ChangeUserRet::user_does_not_exist:
+                http_response_code(400);
+                echo "User does not exist";
+                break;
+            case ChangeUserRet::unauthorised:
+                http_response_code(403);
+                echo "Incorrect email and password pair";
+                break;
+            case ChangeUserRet::unexpected_error:
+                http_response_code(400);
+                echo "Unexpected error";
+                break;
+        }
+        break;
+    case "change_pass_hash":
+        if ($_SERVER["REQUEST_METHOD"] != "POST") {
+            http_response_code(405);
+            break;
+        }
+        $res = $user_controller->changePasswordHash();
+        switch ($res) {
+            case ChangeUserRet::success:
+                http_response_code(204);
+                break;
+            case ChangeUserRet::bad_request:
+                http_response_code(400);
+                echo "Bad request";
+                break;
+            case ChangeUserRet::user_does_not_exist:
+                http_response_code(400);
+                echo "User does not exist";
+                break;
+            case ChangeUserRet::unauthorised:
+                http_response_code(403);
+                echo "Incorrect email and password pair";
+                break;
+            case ChangeUserRet::unexpected_error:
+                http_response_code(400);
+                echo "Unexpected error";
+                break;
+        }
+        break;
     default:
         http_response_code(404);
         break;

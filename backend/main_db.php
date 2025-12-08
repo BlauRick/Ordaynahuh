@@ -20,13 +20,13 @@ class MainDb
         try {
             return $this->connection->execute_query(
                 '
-            SELECT display_name, email, phone_number FROM intezmeny_ids
-            LEFT JOIN intezmeny_ids_users ON intezmeny_ids_id = intezmeny_ids.id
-            LEFT JOIN users ON users_id = users.id
+                    SELECT display_name, email, phone_number FROM intezmeny_ids
+                    LEFT JOIN intezmeny_ids_users ON intezmeny_ids_id = intezmeny_ids.id
+                    LEFT JOIN users ON users_id = users.id
 
-            WHERE intezmeny_ids.intezmeny_id = ?
-            ;
-        ',
+                    WHERE intezmeny_ids.intezmeny_id = ?
+                    ;
+                ',
                 array($intezmeny_id),
             );
         } catch (Exception $e) {
@@ -39,8 +39,8 @@ class MainDb
         try {
             return $this->connection->execute_query(
                 '
-                SELECT password_hash FROM users WHERE email = ?;
-            ',
+                    SELECT password_hash FROM users WHERE email = ?;
+                ',
                 array($email),
             );
         } catch (Exception $e) {
@@ -53,8 +53,8 @@ class MainDb
         try {
             $ret = $this->connection->execute_query(
                 '
-                SELECT EXISTS(SELECT * FROM users WHERE email = ?)
-            ',
+                    SELECT EXISTS(SELECT * FROM users WHERE email = ?)
+                ',
                 array($email)
             );
         } catch (Exception $e) {
@@ -74,8 +74,8 @@ class MainDb
         try {
             return $this->connection->execute_query(
                 '
-                INSERT INTO users (display_name, email, phone_number, password_hash) VALUE (?,?,?,?);
-            ',
+                    INSERT INTO users (display_name, email, phone_number, password_hash) VALUE (?,?,?,?);
+                ',
                 array($display_name, $email, $phone_number, $password_hash)
             );
         } catch (Exception $e) {
@@ -92,9 +92,63 @@ class MainDb
         try {
             return $this->connection->execute_query(
                 '
-                DELETE FROM users WHERE email = ?;
-            ',
+                    DELETE FROM users WHERE email = ?;
+                ',
                 array($email),
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Assumes the user exists
+     * Returns true on success and false on error
+     */
+    function changeDisplayNameViaEmail(string $email, string $new_disp_name): bool
+    {
+        try {
+            return $this->connection->execute_query(
+                '
+                    UPDATE users SET display_name = ? WHERE email = ?;
+                ',
+                array($new_disp_name, $email),
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Assumes the user exists
+     * Returns true on success and false on error
+     */
+    function changePhoneNumberViaEmail(string $email, string $new_phone_number): bool
+    {
+        try {
+            return $this->connection->execute_query(
+                '
+                    UPDATE users SET phone_number = ? WHERE email = ?;
+                ',
+                array($new_phone_number, $email),
+            );
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Assumes the user exists
+     * Returns true on success and false on error
+     */
+    function changePasswordHashViaEmail(string $email, string $new_pass_hash): bool
+    {
+        try {
+            return $this->connection->execute_query(
+                '
+                    UPDATE users SET password_hash = ? WHERE email = ?;
+                ',
+                array($new_pass_hash, $email),
             );
         } catch (Exception $e) {
             return false;
