@@ -53,6 +53,58 @@ switch ($req_uri[1]) {
         echo $res;
         http_response_code(200);
         break;
+    case "create_user":
+        if ($_SERVER["REQUEST_METHOD"] != "POST") {
+            http_response_code(405);
+            break;
+        }
+        $res = $user_controller->createUser();
+        switch ($res) {
+            case CreateUserRet::success:
+                http_response_code(201);
+                break;
+            case CreateUserRet::bad_request:
+                http_response_code(400);
+                echo "Bad request";
+                break;
+            case CreateUserRet::user_already_exists:
+                http_response_code(400);
+                echo "User already exists";
+                break;
+            case CreateUserRet::unexpected_error:
+                http_response_code(400);
+                echo "Unexpected error";
+                break;
+        };
+        break;
+    case "delete_user":
+        if ($_SERVER["REQUEST_METHOD"] != "DELETE") {
+            http_response_code(405);
+            break;
+        }
+        $res = $user_controller->deleteUser();
+        switch ($res) {
+            case DeleteUserRet::success:
+                http_response_code(204);
+                break;
+            case DeleteUserRet::bad_request:
+                http_response_code(400);
+                echo "Bad request";
+                break;
+            case DeleteUserRet::user_does_not_exist:
+                http_response_code(400);
+                echo "User does not exist";
+                break;
+            case DeleteUserRet::unauthorised:
+                http_response_code(403);
+                echo "Incorrect email and password pair";
+                break;
+            case DeleteUserRet::unexpected_error:
+                http_response_code(400);
+                echo "Unexpected error";
+                break;
+        }
+        break;
     default:
         http_response_code(404);
         break;
