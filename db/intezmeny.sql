@@ -39,10 +39,16 @@ CREATE OR REPLACE TABLE intezmeny.teacher (
 	id                   INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	name                 VARCHAR(200) UNIQUE NOT NULL,
 	job                  VARCHAR(200) NOT NULL,
-	subjects_undertaken  VARCHAR(400),
 	email                VARCHAR(254),
 	phone_number         VARCHAR(15)       
  ) ENGINE=InnoDB;
+
+CREATE OR REPLACE TABLE intezmeny.teacher_lesson (
+  teacher_id INT UNSIGNED NOT NULL,
+  lesson_id INT UNSIGNED NOT NULL,
+  CONSTRAINT fk_lesson_teacher FOREIGN KEY (lesson_id) REFERENCES intezmeny.lesson (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT fk_teacher_lesson FOREIGN KEY (teacher_id) REFERENCES intezmeny.teacher (id) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB;
 
 ALTER TABLE intezmeny.teacher MODIFY email VARCHAR(254) COMMENT 'The max length of a valid email address is technically 320 but you can''t really use that due to the limit of the mailbox being 256 bytes (254 due to it always including a < and > bracket).
 https://stackoverflow.com/questions/386294/what-is-the-maximum-length-of-a-valid-email-address';
@@ -117,11 +123,10 @@ CREATE OR REPLACE TABLE intezmeny.homework_attachments (
 
 delimiter //
 
-create procedure newTeacher
+create procedure intezmeny.newTeacher
 (
 in in_name VARCHAR(200),
 in in_job VARCHAR(200),
-in in_subjects_undertaken VARCHAR(200),
 in in_email VARCHAR(254),
 in in_phone_number VARCHAR(15)
 )
@@ -129,9 +134,9 @@ in in_phone_number VARCHAR(15)
 BEGIN
 
 INSERT INTO teacher
-(name, job, subjects_undertaken, email, phone_number)
+(name, job, email, phone_number)
 VALUES
-(in_name, in_job, in_subjects_undertaken,in_email, in_phone_number);
+(in_name, in_job, in_email, in_phone_number);
 
 END//
 
