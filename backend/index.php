@@ -161,12 +161,12 @@ switch ($req_uri[1]) {
                 break;
         }
         break;
-    case "change_pass_hash":
+    case "change_pass":
         if ($_SERVER["REQUEST_METHOD"] != "POST") {
             http_response_code(405);
             break;
         }
-        $res = $user_controller->changePasswordHash();
+        $res = $user_controller->changePassword();
         switch ($res) {
             case ChangeUserRet::success:
                 http_response_code(204);

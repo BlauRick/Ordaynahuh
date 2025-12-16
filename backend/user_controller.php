@@ -26,7 +26,7 @@ class UserController
         if (
             !isset($data->disp_name) or !is_string($data->disp_name) or
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
-            !isset($data->pass_hash) or !is_string($data->pass_hash) or strlen($data->pass_hash) != 60
+            !isset($data->pass) or !is_string($data->pass) or strlen($data->pass) < 8
         ) {
             return CreateUserRet::bad_request;
         }
@@ -45,7 +45,8 @@ class UserController
             return CreateUserRet::user_already_exists;
         }
 
-        if (!$main_db->createUser($data->disp_name, $data->email, $phone_number, $data->pass_hash)) {
+        $pass_hash = password_hash($data->pass, PASSWORD_BCRYPT);
+        if (!$main_db->createUser($data->disp_name, $data->email, $phone_number, $pass_hash)) {
             return CreateUserRet::unexpected_error;
         }
 
@@ -59,7 +60,7 @@ class UserController
         $main_db = new MainDb();
 
         if (!isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
-            !isset($data->pass_hash) or !is_string($data->pass_hash) or strlen($data->pass_hash) != 60) {
+            !isset($data->pass) or !is_string($data->pass)) {
             return DeleteUserRet::bad_request;
         }
 
@@ -69,7 +70,7 @@ class UserController
 
         $user_pass = $main_db->getUserPassViaEmail($data->email)->fetch_all()[0][0];
 
-        if (!$user_pass or $user_pass !== $data->pass_hash) {
+        if (!$user_pass or !password_verify($data->pass, $user_pass)) {
             return DeleteUserRet::unauthorised;
         }
 
@@ -89,7 +90,7 @@ class UserController
         if (
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
             !isset($data->new_disp_name) or !is_string($data->new_disp_name) or
-            !isset($data->pass_hash) or !is_string($data->pass_hash) or strlen($data->pass_hash) != 60
+            !isset($data->pass) or !is_string($data->pass)
         ) {
             return ChangeUserRet::bad_request;
         }
@@ -100,7 +101,7 @@ class UserController
 
         $user_pass = $main_db->getUserPassViaEmail($data->email)->fetch_all()[0][0];
 
-        if (!$user_pass or $user_pass !== $data->pass_hash) {
+        if (!$user_pass or !password_verify($data->pass, $user_pass)) {
             return ChangeUserRet::unauthorised;
         }
 
@@ -121,7 +122,7 @@ class UserController
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
             !isset($data->new_phone_number) or !is_string($data->new_phone_number) or
             strlen($data->new_phone_number) > 15 or !is_numeric($data->new_phone_number) or
-            !isset($data->pass_hash) or !is_string($data->pass_hash) or strlen($data->pass_hash) != 60
+            !isset($data->pass) or !is_string($data->pass)
         ) {
             return ChangeUserRet::bad_request;
         }
@@ -132,7 +133,7 @@ class UserController
 
         $user_pass = $main_db->getUserPassViaEmail($data->email)->fetch_all()[0][0];
 
-        if (!$user_pass or $user_pass !== $data->pass_hash) {
+        if (!$user_pass or !password_verify($data->pass, $user_pass)) {
             return ChangeUserRet::unauthorised;
         }
 
@@ -143,7 +144,7 @@ class UserController
         return ChangeUserRet::success;
     }
 
-    public function changePasswordHash(): ChangeUserRet
+    public function changePassword(): ChangeUserRet
     {
         $data = json_decode(file_get_contents("php://input"));
 
@@ -151,8 +152,8 @@ class UserController
 
         if (
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or 
-            !isset($data->new_pass_hash) or !is_string($data->new_pass_hash) or strlen($data->new_pass_hash) != 60 or
-            !isset($data->pass_hash) or !is_string($data->pass_hash) or strlen($data->pass_hash) != 60
+            !isset($data->new_pass) or !is_string($data->new_pass) or strlen($data->new_pass) < 8 or
+            !isset($data->pass) or !is_string($data->pass)
         ) {
             return ChangeUserRet::bad_request;
         }
@@ -163,11 +164,11 @@ class UserController
 
         $user_pass = $main_db->getUserPassViaEmail($data->email)->fetch_all()[0][0];
 
-        if (!$user_pass or $user_pass !== $data->pass_hash) {
+        if (!$user_pass or !password_verify($data->pass, $user_pass)) {
             return ChangeUserRet::unauthorised;
         }
 
-        if (!$main_db->changePasswordHashViaEmail($data->email, $data->new_pass_hash)) {
+        if (!$main_db->changePasswordHashViaEmail($data->email, password_hash( $data->new_pass, PASSWORD_BCRYPT))) {
             return ChangeUserRet::unexpected_error;
         }
 

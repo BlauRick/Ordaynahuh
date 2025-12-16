@@ -3,146 +3,6 @@
   "last_position": null,
   "requests": [
     {
-      "name": "Create user",
-      "url": "http://localhost:8000/create_user",
-      "params": [],
-      "headers": [
-        {
-          "enabled": true,
-          "data": [
-            "cache-control",
-            "no-cache"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "user-agent",
-            "ATAC/v0.22.1"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept",
-            "*/*"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept-encoding",
-            "gzip, deflate, br"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "connection",
-            "keep-alive"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "content-type",
-            "application/json"
-          ]
-        }
-      ],
-      "auth": "no_auth",
-      "scripts": {
-        "pre_request_script": null,
-        "post_request_script": null
-      },
-      "settings": {
-        "use_config_proxy": true,
-        "allow_redirects": true,
-        "timeout": 30000,
-        "store_received_cookies": true,
-        "pretty_print_response_content": true,
-        "accept_invalid_certs": false,
-        "accept_invalid_hostnames": false
-      },
-      "protocol": {
-        "type": "http",
-        "method": "POST",
-        "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
-        }
-      }
-    },
-    {
-      "name": "Create user user already exists",
-      "url": "http://localhost:8000/create_user",
-      "params": [],
-      "headers": [
-        {
-          "enabled": true,
-          "data": [
-            "cache-control",
-            "no-cache"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "user-agent",
-            "ATAC/v0.22.1"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept",
-            "*/*"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept-encoding",
-            "gzip, deflate, br"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "connection",
-            "keep-alive"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "content-type",
-            "application/json"
-          ]
-        }
-      ],
-      "auth": "no_auth",
-      "scripts": {
-        "pre_request_script": null,
-        "post_request_script": null
-      },
-      "settings": {
-        "use_config_proxy": true,
-        "allow_redirects": true,
-        "timeout": 30000,
-        "store_received_cookies": true,
-        "pretty_print_response_content": true,
-        "accept_invalid_certs": false,
-        "accept_invalid_hostnames": false
-      },
-      "protocol": {
-        "type": "http",
-        "method": "POST",
-        "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
-        }
-      }
-    },
-    {
       "name": "Create user no display name",
       "url": "http://localhost:8000/create_user",
       "params": [],
@@ -208,7 +68,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -278,7 +138,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": [\"sad\"],\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": [\"tester\"],\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -348,7 +208,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -418,7 +278,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": [\"sad@sad.com\"],\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": [\"tester@test.com\"],\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -488,12 +348,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sadsad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"testertest.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "Create user no password hash",
+      "name": "Create user no password",
       "url": "http://localhost:8000/create_user",
       "params": [],
       "headers": [
@@ -558,12 +418,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\"\n}"
         }
       }
     },
     {
-      "name": "Create user password hash not string",
+      "name": "Create user password not string",
       "url": "http://localhost:8000/create_user",
       "params": [],
       "headers": [
@@ -628,12 +488,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": [\"tester_pass\"]\n}"
         }
       }
     },
     {
-      "name": "Create user password hash length not 60",
+      "name": "Create user password not at least length 8",
       "url": "http://localhost:8000/create_user",
       "params": [],
       "headers": [
@@ -698,7 +558,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_\"\n}"
         }
       }
     },
@@ -768,7 +628,77 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester_no_phone@test.com\",\n    \"pass\": \"tester_pass\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Delete no phone number user",
+      "url": "http://localhost:8000/delete_user",
+      "params": [],
+      "headers": [
+        {
+          "enabled": true,
+          "data": [
+            "cache-control",
+            "no-cache"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "user-agent",
+            "ATAC/v0.22.1"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept",
+            "*/*"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept-encoding",
+            "gzip, deflate, br"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "connection",
+            "keep-alive"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "content-type",
+            "application/json"
+          ]
+        }
+      ],
+      "auth": "no_auth",
+      "scripts": {
+        "pre_request_script": null,
+        "post_request_script": null
+      },
+      "settings": {
+        "use_config_proxy": true,
+        "allow_redirects": true,
+        "timeout": 30000,
+        "store_received_cookies": true,
+        "pretty_print_response_content": true,
+        "accept_invalid_certs": false,
+        "accept_invalid_hostnames": false
+      },
+      "protocol": {
+        "type": "http",
+        "method": "DELETE",
+        "body": {
+          "json": "{\n    \"email\": \"tester_no_phone@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -838,7 +768,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": [\"123456789012345\"],\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": [\"123456789012345\"],\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -908,7 +838,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"12345678901234a\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"12345678901234a\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -978,7 +908,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"1234567890123456\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"1234567890123456\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1048,7 +978,147 @@
         "type": "http",
         "method": "PATCH",
         "body": {
-          "json": "{\n    \"disp_name\": \"sad\",\n    \"email\": \"sad@sad.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Create user",
+      "url": "http://localhost:8000/create_user",
+      "params": [],
+      "headers": [
+        {
+          "enabled": true,
+          "data": [
+            "cache-control",
+            "no-cache"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "user-agent",
+            "ATAC/v0.22.1"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept",
+            "*/*"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept-encoding",
+            "gzip, deflate, br"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "connection",
+            "keep-alive"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "content-type",
+            "application/json"
+          ]
+        }
+      ],
+      "auth": "no_auth",
+      "scripts": {
+        "pre_request_script": null,
+        "post_request_script": null
+      },
+      "settings": {
+        "use_config_proxy": true,
+        "allow_redirects": true,
+        "timeout": 30000,
+        "store_received_cookies": true,
+        "pretty_print_response_content": true,
+        "accept_invalid_certs": false,
+        "accept_invalid_hostnames": false
+      },
+      "protocol": {
+        "type": "http",
+        "method": "POST",
+        "body": {
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Create user user already exists",
+      "url": "http://localhost:8000/create_user",
+      "params": [],
+      "headers": [
+        {
+          "enabled": true,
+          "data": [
+            "cache-control",
+            "no-cache"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "user-agent",
+            "ATAC/v0.22.1"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept",
+            "*/*"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "accept-encoding",
+            "gzip, deflate, br"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "connection",
+            "keep-alive"
+          ]
+        },
+        {
+          "enabled": true,
+          "data": [
+            "content-type",
+            "application/json"
+          ]
+        }
+      ],
+      "auth": "no_auth",
+      "scripts": {
+        "pre_request_script": null,
+        "post_request_script": null
+      },
+      "settings": {
+        "use_config_proxy": true,
+        "allow_redirects": true,
+        "timeout": 30000,
+        "store_received_cookies": true,
+        "pretty_print_response_content": true,
+        "accept_invalid_certs": false,
+        "accept_invalid_hostnames": false
+      },
+      "protocol": {
+        "type": "http",
+        "method": "POST",
+        "body": {
+          "json": "{\n    \"disp_name\": \"tester\",\n    \"email\": \"tester@test.com\",\n    \"phone_number\": \"123456789012345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1118,7 +1188,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1188,7 +1258,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1258,7 +1328,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": [\"sad@sad.com\"],\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": [\"tester@test.com\"],\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1328,7 +1398,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sadsad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"testertest.com\",\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1398,7 +1468,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1468,12 +1538,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": [\"sadder\"],\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": [\"testerer\"],\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change display name no password hash",
+      "name": "change display name no password",
       "url": "http://localhost:8000/change_disp_name",
       "params": [],
       "headers": [
@@ -1538,12 +1608,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": \"testerer\"\n}"
         }
       }
     },
     {
-      "name": "change display name password hash not string",
+      "name": "change display name password not string",
       "url": "http://localhost:8000/change_disp_name",
       "params": [],
       "headers": [
@@ -1608,12 +1678,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": \"testerer\",\n    \"pass\": [\"tester_pass\"]\n}"
         }
       }
     },
     {
-      "name": "change display name password hash length not 60",
+      "name": "change display name password incorrect",
       "url": "http://localhost:8000/change_disp_name",
       "params": [],
       "headers": [
@@ -1678,77 +1748,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+\"\n}"
-        }
-      }
-    },
-    {
-      "name": "change display name password hash incorrect",
-      "url": "http://localhost:8000/change_disp_name",
-      "params": [],
-      "headers": [
-        {
-          "enabled": true,
-          "data": [
-            "cache-control",
-            "no-cache"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "user-agent",
-            "ATAC/v0.22.1"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept",
-            "*/*"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept-encoding",
-            "gzip, deflate, br"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "connection",
-            "keep-alive"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "content-type",
-            "application/json"
-          ]
-        }
-      ],
-      "auth": "no_auth",
-      "scripts": {
-        "pre_request_script": null,
-        "post_request_script": null
-      },
-      "settings": {
-        "use_config_proxy": true,
-        "allow_redirects": true,
-        "timeout": 30000,
-        "store_received_cookies": true,
-        "pretty_print_response_content": true,
-        "accept_invalid_certs": false,
-        "accept_invalid_hostnames": false
-      },
-      "protocol": {
-        "type": "http",
-        "method": "POST",
-        "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass_incorrect\"\n}"
         }
       }
     },
@@ -1818,7 +1818,7 @@
         "type": "http",
         "method": "PATCH",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_disp_name\": \"sadder\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_disp_name\": \"testerer\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1888,7 +1888,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -1958,7 +1958,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"new_phone_number\": \"12345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -2028,7 +2028,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": [\"sad@sad.com\"],\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": [\"tester@test.com\"],\n    \"new_phone_number\": \"12345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -2098,7 +2098,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sadsad.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"testertest.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -2168,7 +2168,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -2238,7 +2238,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": [\"12345\"],\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": [\"12345\"],\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -2308,12 +2308,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"1234567890123456\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": \"1234567890123456\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change phone number no password hash",
+      "name": "change phone number no password",
       "url": "http://localhost:8000/change_phone_number",
       "params": [],
       "headers": [
@@ -2378,12 +2378,12 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"12345\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": \"12345\"\n}"
         }
       }
     },
     {
-      "name": "change phone number password hash not string",
+      "name": "change phone number password not string",
       "url": "http://localhost:8000/change_phone_number",
       "params": [],
       "headers": [
@@ -2448,77 +2448,7 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"]\n}"
-        }
-      }
-    },
-    {
-      "name": "change phone number password hash length not 60",
-      "url": "http://localhost:8000/change_phone_number",
-      "params": [],
-      "headers": [
-        {
-          "enabled": true,
-          "data": [
-            "cache-control",
-            "no-cache"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "user-agent",
-            "ATAC/v0.22.1"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept",
-            "*/*"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept-encoding",
-            "gzip, deflate, br"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "connection",
-            "keep-alive"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "content-type",
-            "application/json"
-          ]
-        }
-      ],
-      "auth": "no_auth",
-      "scripts": {
-        "pre_request_script": null,
-        "post_request_script": null
-      },
-      "settings": {
-        "use_config_proxy": true,
-        "allow_redirects": true,
-        "timeout": 30000,
-        "store_received_cookies": true,
-        "pretty_print_response_content": true,
-        "accept_invalid_certs": false,
-        "accept_invalid_hostnames": false
-      },
-      "protocol": {
-        "type": "http",
-        "method": "POST",
-        "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa+\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass\": [\"tester_pass\"]\n}"
         }
       }
     },
@@ -2588,13 +2518,13 @@
         "type": "http",
         "method": "PATCH",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_phone_number\": \"12345\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -2658,13 +2588,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash no email",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password back",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -2728,13 +2658,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tester_pass\",\n    \"pass\": \"tmp_tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash email not string",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password no email",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -2798,13 +2728,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": [\"sad@sad.com\"],\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash email with no @",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password email not string",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -2868,13 +2798,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sadsad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": [\"tester@test.com\"],\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash no new password hash",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password email with no @",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -2938,13 +2868,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"testertest.com\",\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash new password hash not string",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password no new password",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3008,13 +2938,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"],\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash new password hash length not 60",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password new password not string",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3078,13 +3008,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb+\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": [\"tmp_tester_pass\"],\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash no password hash",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password new password length not at least 8",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3148,13 +3078,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tmp_tes\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash password hash not string",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password no password",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3218,13 +3148,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"]\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tmp_tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "change password hash password hash length not 60 copy",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password password not string",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3288,13 +3218,13 @@
         "type": "http",
         "method": "POST",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb+\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": [\"tester_pass\"]\n}"
         }
       }
     },
     {
-      "name": "change password hash method is not POST",
-      "url": "http://localhost:8000/change_pass_hash",
+      "name": "change password method is not POST",
+      "url": "http://localhost:8000/change_pass",
       "params": [],
       "headers": [
         {
@@ -3358,7 +3288,7 @@
         "type": "http",
         "method": "PATCH",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"new_pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"new_pass\": \"tmp_tester_pass\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -3428,7 +3358,7 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -3498,7 +3428,7 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": [\"sad@sad.com\"],\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": [\"tester@test.com\"],\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -3568,12 +3498,12 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sadsad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"testertest.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
     {
-      "name": "Delete user no password hash",
+      "name": "Delete user no password",
       "url": "http://localhost:8000/delete_user",
       "params": [],
       "headers": [
@@ -3638,12 +3568,12 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\"\n}"
         }
       }
     },
     {
-      "name": "Delete user password hash not string",
+      "name": "Delete user password not string",
       "url": "http://localhost:8000/delete_user",
       "params": [],
       "headers": [
@@ -3708,12 +3638,12 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": [\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"]\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": [\"tester_pass\"]\n}"
         }
       }
     },
     {
-      "name": "Delete user password hash lenght not 60",
+      "name": "Delete user password incorrect",
       "url": "http://localhost:8000/delete_user",
       "params": [],
       "headers": [
@@ -3778,77 +3708,7 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbba\"\n}"
-        }
-      }
-    },
-    {
-      "name": "Delete user password hash incorrect",
-      "url": "http://localhost:8000/delete_user",
-      "params": [],
-      "headers": [
-        {
-          "enabled": true,
-          "data": [
-            "cache-control",
-            "no-cache"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "user-agent",
-            "ATAC/v0.22.1"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept",
-            "*/*"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "accept-encoding",
-            "gzip, deflate, br"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "connection",
-            "keep-alive"
-          ]
-        },
-        {
-          "enabled": true,
-          "data": [
-            "content-type",
-            "application/json"
-          ]
-        }
-      ],
-      "auth": "no_auth",
-      "scripts": {
-        "pre_request_script": null,
-        "post_request_script": null
-      },
-      "settings": {
-        "use_config_proxy": true,
-        "allow_redirects": true,
-        "timeout": 30000,
-        "store_received_cookies": true,
-        "pretty_print_response_content": true,
-        "accept_invalid_certs": false,
-        "accept_invalid_hostnames": false
-      },
-      "protocol": {
-        "type": "http",
-        "method": "DELETE",
-        "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass_incorrect\"\n}"
         }
       }
     },
@@ -3918,7 +3778,7 @@
         "type": "http",
         "method": "PATCH",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -3988,7 +3848,7 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     },
@@ -4058,7 +3918,7 @@
         "type": "http",
         "method": "DELETE",
         "body": {
-          "json": "{\n    \"email\": \"sad@sad.com\",\n    \"pass_hash\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbb\"\n}"
+          "json": "{\n    \"email\": \"tester@test.com\",\n    \"pass\": \"tester_pass\"\n}"
         }
       }
     }
