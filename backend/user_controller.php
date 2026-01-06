@@ -34,7 +34,7 @@ class UserController
         return json_encode($res->fetch_all());
     }
 
-    public function getRefreshToken(): TokenRet
+    public function getRefreshToken(): UserControllerRet
     {
         global $is_test_server;
 
@@ -44,24 +44,22 @@ class UserController
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
             !isset($data->pass) or !is_string($data->pass)
         ) {
-            return TokenRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $main_db = new MainDb();
 
         if (!$main_db->userExistsEmail($data->email)) {
-            return TokenRet::user_does_not_exist;
+            return UserControllerRet::user_does_not_exist;
         }
 
         $user_pass = $main_db->getUserPassViaEmail($data->email);
         if (!$user_pass or !password_verify($data->pass, $user_pass)) {
-            return TokenRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
 
         $user_id = $main_db->getUserIdViaEmail($data->email);
         $refresh_token = $this->jwt->createRefreshToken($user_id);
-
-        echo $refresh_token->toString() . "\n";
 
         $arr_cookie_options = array(
             'expires' => time() + 60 * 60 * 24 * 15,
@@ -73,27 +71,27 @@ class UserController
         );
         setcookie('RefreshToken', $refresh_token->toString(), $arr_cookie_options);
 
-        return TokenRet::success;
+        return UserControllerRet::success;
     }
 
-    public function refreshRefreshToken(): TokenRet
+    public function refreshRefreshToken(): UserControllerRet
     {
         global $is_test_server;
 
         if (!isset($_COOKIE["RefreshToken"]) or !is_string($_COOKIE["RefreshToken"])) {
-            return TokenRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $main_db = new MainDb();
 
         $token = $this->jwt->parseToken($_COOKIE["RefreshToken"]);
         if ($token === null) {
-            return TokenRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $invalid_ids = $main_db->getRevokedRefreshTokens();
         if (!$this->jwt->validateRefreshToken($token, $invalid_ids)) {
-            return TokenRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
         $new_token = $this->jwt->createRefreshToken($user_id);
@@ -112,27 +110,27 @@ class UserController
         );
         setcookie('RefreshToken', $new_token->toString(), $arr_cookie_options);
 
-        return TokenRet::success;
+        return UserControllerRet::success;
     }
 
-    public function getAccessToken(): TokenRet
+    public function getAccessToken(): UserControllerRet
     {
         global $is_test_server;
 
         if (!isset($_COOKIE["RefreshToken"]) or !is_string($_COOKIE["RefreshToken"])) {
-            return TokenRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $main_db = new MainDb();
 
         $token = $this->jwt->parseToken($_COOKIE["RefreshToken"]);
         if ($token === null) {
-            return TokenRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $invalid_ids = $main_db->getRevokedRefreshTokens();
         if (!$this->jwt->validateRefreshToken($token, $invalid_ids)) {
-            return TokenRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
         $new_access_token = $this->jwt->createAccessToken($user_id);
@@ -148,10 +146,10 @@ class UserController
         );
         setcookie('AccessToken', $new_access_token->toString(), $arr_cookie_options);
 
-        return TokenRet::success;
+        return UserControllerRet::success;
     }
 
-    public function createUser(): CreateUserRet
+    public function createUser(): UserControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
         if (
@@ -159,13 +157,13 @@ class UserController
             !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
             !isset($data->pass) or !is_string($data->pass) or strlen($data->pass) < 8
         ) {
-            return CreateUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $phone_number = null;
         if (isset($data->phone_number)) {
             if (!is_string($data->phone_number) or strlen($data->phone_number) > 15 or !is_numeric($data->phone_number)) {
-                return CreateUserRet::bad_request;
+                return UserControllerRet::bad_request;
             }
             $phone_number = $data->phone_number;
         }
@@ -173,190 +171,202 @@ class UserController
         $main_db = new MainDb();
 
         if ($main_db->userExistsEmail($data->email)) {
-            return CreateUserRet::user_already_exists;
+            return UserControllerRet::user_already_exists;
         }
 
         $pass_hash = password_hash($data->pass, PASSWORD_BCRYPT);
         if (!$main_db->createUser($data->disp_name, $data->email, $phone_number, $pass_hash)) {
-            return CreateUserRet::unexpected_error;
+            return UserControllerRet::unexpected_error;
         }
 
-        return CreateUserRet::success;
+        return UserControllerRet::success_created;
     }
 
-    public function deleteUser(): DeleteUserRet
+    public function deleteUser(): UserControllerRet
     {
         if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) {
-            return DeleteUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $token = $this->jwt->parseToken($_COOKIE["AccessToken"]);
         if ($token === null) {
-            return DeleteUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!$this->jwt->validateAccessToken($token)) {
-            return DeleteUserRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
 
         $main_db = new MainDb();
 
         if (!$main_db->userExistsViaId($user_id)) {
-            return DeleteUserRet::user_does_not_exist;
+            return UserControllerRet::user_does_not_exist;
         }
 
         if (!$main_db->deleteUserViaId($user_id)) {
-            return DeleteUserRet::unexpected_error;
+            return UserControllerRet::unexpected_error;
         }
 
         // Unset token cookies
         setcookie('RefreshToken', "", 0);
         setcookie('AccessToken', "", 0);
 
-        return DeleteUserRet::success;
+        return UserControllerRet::success_no_content;
     }
 
-    public function changeDisplayName(): ChangeUserRet
+    public function changeDisplayName(): UserControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
 
         if (!isset($data->new_disp_name) or !is_string($data->new_disp_name) or strlen($data->new_disp_name) > 200) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $token = $this->jwt->parseToken($_COOKIE["AccessToken"]);
         if ($token === null) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!$this->jwt->validateAccessToken($token)) {
-            return ChangeUserRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
 
         $main_db = new MainDb();
 
         if (!$main_db->userExistsViaId($user_id)) {
-            return ChangeUserRet::user_does_not_exist;
+            return UserControllerRet::user_does_not_exist;
         }
 
         if (!$main_db->changeDisplayNameViaId($user_id, $data->new_disp_name)) {
-            return ChangeUserRet::unexpected_error;
+            return UserControllerRet::unexpected_error;
         }
 
-        return ChangeUserRet::success;
+        return UserControllerRet::success_no_content;
     }
 
-    public function changePhoneNumber(): ChangeUserRet
+    public function changePhoneNumber(): UserControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
         if (
             !isset($data->new_phone_number) or !is_string($data->new_phone_number) or
             strlen($data->new_phone_number) > 15 or !is_numeric($data->new_phone_number)
         ) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $token = $this->jwt->parseToken($_COOKIE["AccessToken"]);
         if ($token === null) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!$this->jwt->validateAccessToken($token)) {
-            return ChangeUserRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
 
         $main_db = new MainDb();
 
         if (!$main_db->userExistsViaId($user_id)) {
-            return ChangeUserRet::user_does_not_exist;
+            return UserControllerRet::user_does_not_exist;
         }
 
         if (!$main_db->changePhoneNumberViaId($user_id, $data->new_phone_number)) {
-            return ChangeUserRet::unexpected_error;
+            return UserControllerRet::unexpected_error;
         }
 
-        return ChangeUserRet::success;
+        return UserControllerRet::success_no_content;
     }
 
-    public function changePassword(): ChangeUserRet
+    public function changePassword(): UserControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
         if (
             !isset($data->new_pass) or !is_string($data->new_pass) or strlen($data->new_pass) < 8
         ) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         $token = $this->jwt->parseToken($_COOKIE["AccessToken"]);
         if ($token === null) {
-            return ChangeUserRet::bad_request;
+            return UserControllerRet::bad_request;
         }
 
         if (!$this->jwt->validateAccessToken($token)) {
-            return ChangeUserRet::unauthorised;
+            return UserControllerRet::unauthorised;
         }
         $user_id = $token->claims()->get("uid");
 
         $main_db = new MainDb();
 
         if (!$main_db->userExistsViaId($user_id)) {
-            return ChangeUserRet::user_does_not_exist;
+            return UserControllerRet::user_does_not_exist;
         }
 
         if (!$main_db->changePasswordHashViaId($user_id, password_hash($data->new_pass, PASSWORD_BCRYPT))) {
-            return ChangeUserRet::unexpected_error;
+            return UserControllerRet::unexpected_error;
         }
 
-        return ChangeUserRet::success;
+        return UserControllerRet::success_no_content;
     }
 }
 
-enum TokenRet
+function handleReturn(UserControllerRet $ret_val): void
+{
+    switch ($ret_val) {
+        case UserControllerRet::success:
+            http_response_code(200);
+            break;
+        case UserControllerRet::success_created:
+            http_response_code(201);
+            break;
+        case UserControllerRet::success_no_content:
+            http_response_code(204);
+            break;
+        case UserControllerRet::bad_request:
+            http_response_code(400);
+            echo "Bad request";
+            break;
+        case UserControllerRet::user_does_not_exist:
+            http_response_code(400);
+            echo "User does not exist";
+            break;
+        case UserControllerRet::user_already_exists:
+            http_response_code(400);
+            echo "User already exists";
+            break;
+        case UserControllerRet::unauthorised:
+            http_response_code(403);
+            echo "Unauthorised";
+            break;
+        case UserControllerRet::unexpected_error:
+            http_response_code(500);
+            echo "Unexpected error";
+            break;
+    }
+}
+
+enum UserControllerRet
 {
     case success;
+    case success_created;
+    case success_no_content;
     case bad_request;
     case unauthorised;
     case user_does_not_exist;
-    case unexpected_error;
-}
-
-enum CreateUserRet
-{
-    case success;
-    case bad_request;
     case user_already_exists;
-    case unexpected_error;
-}
-
-enum DeleteUserRet
-{
-    case success;
-    case bad_request;
-    case user_does_not_exist;
-    case unauthorised;
-    case unexpected_error;
-}
-
-enum ChangeUserRet
-{
-    case success;
-    case bad_request;
-    case user_does_not_exist;
-    case unauthorised;
     case unexpected_error;
 }
