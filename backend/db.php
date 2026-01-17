@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class DB
 {
@@ -18,7 +19,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     SELECT display_name, email, phone_number FROM intezmeny_ids
@@ -39,7 +40,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     SELECT id FROM users WHERE email = ?;
@@ -55,7 +56,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     SELECT password_hash FROM users WHERE email = ?;
@@ -71,13 +72,13 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     SELECT EXISTS(SELECT * FROM users WHERE email = ?)
                 ',
                 array($email)
-            )->fetch_all()[0][0];
+            )->fetch_all()[0][0] === 1;
         } catch (Exception $e) {
             return false;
         }
@@ -87,18 +88,16 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
-            $ret = $this->connection->execute_query(
+            if ($ret === false) return false;
+            return $this->connection->execute_query(
                 '
                     SELECT EXISTS(SELECT * FROM users WHERE id = ?)
                 ',
                 array($uid)
-            );
+            )->fetch_all()[0][0] === 1;
         } catch (Exception $e) {
             return false;
         }
-
-        return $ret->fetch_all()[0][0];
     }
 
     /**
@@ -110,7 +109,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     INSERT INTO ordayna_main_db.users (display_name, email, phone_number, password_hash) VALUE (?,?,?,?);
@@ -130,7 +129,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     DELETE FROM users WHERE id = ?;
@@ -150,7 +149,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     UPDATE users SET display_name = ? WHERE id = ?;
@@ -170,7 +169,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     UPDATE users SET phone_number = ? WHERE id = ?;
@@ -190,7 +189,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     UPDATE users SET password_hash = ? WHERE id = ?;
@@ -206,7 +205,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             $res = $this->connection->execute_query(
                 '
                     SELECT uuid FROM revoked_refresh_tokens;
@@ -231,7 +230,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     INSERT INTO revoked_refresh_tokens (uuid, duration) VALUE (?, ?);
@@ -247,7 +246,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->execute_query(
                 '
                     SELECT EXISTS(
@@ -258,7 +257,7 @@ class DB
                     );
                 ',
                 array($uid, $intezmeny_id)
-            )->fetch_all()[0][0];
+            )->fetch_all()[0][0] === 1;
         } catch (Exception $e) {
             return false;
         }
@@ -268,7 +267,7 @@ class DB
     {
         try {
             $ret = $this->connection->query('USE ordayna_main_db');
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             // return $this->connection->query("SELECT name FROM lesson;");
             return $this->connection->execute_query(
                 '
@@ -288,7 +287,7 @@ class DB
     {
         try {
             $ret = $this->connection->query('USE ordayna_intezmeny_' . $intezmeny_id);
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             return $this->connection->query("SELECT name FROM lesson;");
         } catch (Exception $e) {
             return false;
@@ -299,7 +298,7 @@ class DB
     {
         try {
             $ret = $this->connection->query('USE ordayna_main_db;');
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             $intezmeny_id = $this->connection->query('SELECT IFNULL(MAX(id)+1, 0) FROM intezmeny;')->fetch_all()[0][0];
             $ret = $this->connection->execute_query(
                 '
@@ -307,7 +306,7 @@ class DB
                 ',
                 array($intezmeny_name)
             );
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             $ret = $this->connection->multi_query(
                 '
                     SET @admin_uid = ' . $admin_uid . ';
@@ -454,7 +453,7 @@ class DB
     {
         try {
             $ret = $this->connection->query("USE ordayna_main_db;");
-            if ($ret == false) return false;
+            if ($ret === false) return false;
             $ret = $this->connection->execute_query(
                 '
                     DELETE FROM intezmeny WHERE id = ?;

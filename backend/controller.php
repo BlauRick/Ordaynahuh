@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+// TODO: Rewrite getAllUsers
+
 static $is_test_server = php_sapi_name() === "cli-server";
 
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -10,7 +13,6 @@ include "jwt.php";
 
 class UserController
 {
-
     private $jwt;
 
     function __construct()
@@ -41,26 +43,19 @@ class UserController
         global $is_test_server;
 
         $data = json_decode(file_get_contents("php://input"));
-
-        if (
-            !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
-            !isset($data->pass) or !is_string($data->pass)
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $email = $this->validateEmail(@$data->email);
+        if ($email === null) return ControllerRet::bad_request;
+        $pass = $this->validateString(@$data->pass, min_chars: 8);
+        if ($pass === null) return ControllerRet::bad_request;
 
         $db = new DB();
 
-        if (!$db->userExistsEmail($data->email)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsEmail($email)) return ControllerRet::user_does_not_exist;
 
-        $user_pass = $db->getUserPassViaEmail($data->email);
-        if (!$user_pass or !password_verify($data->pass, $user_pass)) {
-            return ControllerRet::unauthorised;
-        }
+        $user_pass = $db->getUserPassViaEmail($email);
+        if (!$user_pass or !password_verify($pass, $user_pass)) return ControllerRet::unauthorised;
 
-        $user_id = $db->getUserIdViaEmail($data->email);
+        $user_id = $db->getUserIdViaEmail($email);
         $refresh_token = $this->jwt->createRefreshToken($user_id);
 
         $arr_cookie_options = array(
@@ -82,11 +77,8 @@ class UserController
         $db = new DB();
 
         $token = $this->validateRefreshToken($db);
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
-        $new_token = $this->jwt->createRefreshToken($user_id);
+        if (is_a($token, "ControllerRet")) return $token;
+        $new_token = $this->jwt->createRefreshToken($token->claims()->get("uid"));
 
         // Expires after 15 days
         $db->newInvalidRefreshToken($token->claims()->get(RegisteredClaims::ID), '15 0:0:0');
@@ -111,11 +103,8 @@ class UserController
         $db = new DB();
 
         $token = $this->validateRefreshToken($db);
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
-        $new_access_token = $this->jwt->createAccessToken($user_id);
+        if (is_a($token, "ControllerRet")) return $token;
+        $new_access_token = $this->jwt->createAccessToken($token->claims()->get("uid"));
 
         $arr_cookie_options = array(
             // 10 minutes
@@ -134,32 +123,25 @@ class UserController
     public function createUser(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->disp_name) or !is_string($data->disp_name) or
-            !isset($data->email) or !is_string($data->email) or !preg_match('/^[^@]+[@]+[^@]+$/', $data->email) or
-            !isset($data->pass) or !is_string($data->pass) or strlen($data->pass) < 8
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $disp_name = $this->validateString(@$data->disp_name, max_chars: 200);
+        if ($disp_name === null) return ControllerRet::bad_request;
+        $email = $this->validateEmail(@$data->email);
+        if ($email === null) return ControllerRet::bad_request;
+        $pass = $this->validateString(@$data->pass, min_chars: 8);
+        if ($pass === null) return ControllerRet::bad_request;
 
         $phone_number = null;
         if (isset($data->phone_number)) {
-            if (!is_string($data->phone_number) or strlen($data->phone_number) > 15 or !is_numeric($data->phone_number)) {
-                return ControllerRet::bad_request;
-            }
-            $phone_number = $data->phone_number;
+            $phone_number = $this->validateInteger(@$data->phone_number, 15);
+            if ($phone_number === null) return ControllerRet::bad_request;
         }
 
         $db = new DB();
 
-        if ($db->userExistsEmail($data->email)) {
-            return ControllerRet::user_already_exists;
-        }
+        if ($db->userExistsEmail($email)) return ControllerRet::user_already_exists;
 
-        $pass_hash = password_hash($data->pass, PASSWORD_BCRYPT);
-        if (!$db->createUser($data->disp_name, $data->email, $phone_number, $pass_hash)) {
-            return ControllerRet::unexpected_error;
-        }
+        $pass_hash = password_hash($pass, PASSWORD_BCRYPT);
+        if (!$db->createUser($disp_name, $email, $phone_number, $pass_hash)) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_created;
     }
@@ -167,20 +149,14 @@ class UserController
     public function deleteUser(): ControllerRet
     {
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        if (!$db->deleteUserViaId($user_id)) {
-            return ControllerRet::unexpected_error;
-        }
+        // TODO: delete intezmeny's whose sole owner is this user
+        if (!$db->deleteUserViaId($token->claims()->get("uid"))) return ControllerRet::unexpected_error;
 
         // Unset token cookies
         setcookie('RefreshToken', "", 0);
@@ -192,26 +168,17 @@ class UserController
     public function changeDisplayName(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-
-        if (!isset($data->new_disp_name) or !is_string($data->new_disp_name) or strlen($data->new_disp_name) > 200) {
-            return ControllerRet::bad_request;
-        }
+        $new_disp_name = $this->validateString(@$data->new_disp_name, max_chars: 200);
+        if ($new_disp_name === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        if (!$db->changeDisplayNameViaId($user_id, $data->new_disp_name)) {
-            return ControllerRet::unexpected_error;
-        }
+        if (!$db->changeDisplayNameViaId($token->claims()->get("uid"), $new_disp_name)) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_no_content;
     }
@@ -219,56 +186,36 @@ class UserController
     public function changePhoneNumber(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->new_phone_number) or !is_string($data->new_phone_number) or
-            strlen($data->new_phone_number) > 15 or !is_numeric($data->new_phone_number)
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $new_phone_number = $this->validateInteger(@$data->new_phone_number, 15);
+        if ($new_phone_number === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        if (!$db->changePhoneNumberViaId($user_id, $data->new_phone_number)) {
-            return ControllerRet::unexpected_error;
-        }
+        if (!$db->changePhoneNumberViaId($token->claims()->get("uid"), $data->new_phone_number)) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_no_content;
     }
 
+    // TODO: Ask for the old password
     public function changePassword(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->new_pass) or !is_string($data->new_pass) or strlen($data->new_pass) < 8
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $new_pass = $this->validateString(@$data->new_pass, min_chars: 8);
+        if ($new_pass === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        if (!$db->changePasswordHashViaId($user_id, password_hash($data->new_pass, PASSWORD_BCRYPT))) {
-            return ControllerRet::unexpected_error;
-        }
+        if (!$db->changePasswordHashViaId($token->claims()->get("uid"), password_hash($new_pass, PASSWORD_BCRYPT))) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_no_content;
     }
@@ -276,28 +223,17 @@ class UserController
     public function createIntezmeny(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->intezmeny_name) or !is_string($data->intezmeny_name) or strlen($data->intezmeny_name) > 200
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $intezmeny_name = $this->validateString(@$data->intezmeny_name, max_chars: 200);
+        if ($intezmeny_name === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        $ret = $db->createIntezmeny($data->intezmeny_name, $user_id);
-        if (!$ret) {
-            return ControllerRet::unexpected_error;
-        }
+        if (! $db->createIntezmeny($intezmeny_name, $token->claims()->get("uid"))) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_created;
     }
@@ -305,32 +241,18 @@ class UserController
     public function deleteIntezmeny(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->intezmeny_id) or !is_string($data->intezmeny_id) or !is_numeric($data->intezmeny_id)
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $intezmeny_id = $this->validateInteger(@$data->intezmeny_id);
+        if ($intezmeny_id === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
+        if (!$db->partOfIntezmeny($token->claims()->get("uid"), $intezmeny_id)) return ControllerRet::unauthorised;
 
-        if (!$db->partOfIntezmeny($user_id, $data->intezmeny_id)) {
-            return ControllerRet::unauthorised;
-        }
-
-        $ret = $db->deleteIntezmeny($data->intezmeny_id);
-        if (!$ret) {
-            return ControllerRet::unexpected_error;
-        }
+        if (!$db->deleteIntezmeny($intezmeny_id)) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_no_content;
     }
@@ -338,21 +260,14 @@ class UserController
     public function getIntezmenys(): ControllerRet
     {
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
-            return ControllerRet::user_does_not_exist;
-        }
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
         $ret = $db->getIntezmenys($token->claims()->get("uid"));
-        if (!$ret) {
-            return ControllerRet::unexpected_error;
-        }
+        if (!$ret) return ControllerRet::unexpected_error;
 
         header('Content-Type: application/json');
         echo json_encode($ret->fetch_all());
@@ -363,29 +278,23 @@ class UserController
     public function getClasses(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (
-            !isset($data->intezmeny_id) or !is_string($data->intezmeny_id) or !is_numeric($data->intezmeny_id)
-        ) {
-            return ControllerRet::bad_request;
-        }
+        $intezmeny_id = $this->validateInteger(@$data->intezmeny_id);
+        if ($intezmeny_id === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
-        if (is_a($token, "ControllerRet")) {
-            return $token;
-        }
-        $user_id = $token->claims()->get("uid");
+        if (is_a($token, "ControllerRet")) return $token;
 
         $db = new DB();
 
-        if (!$db->userExistsViaId($user_id)) {
+        if (!$db->userExistsViaId($token->claims()->get("uid"))) {
             return ControllerRet::user_does_not_exist;
         }
 
-        if (!$db->partOfIntezmeny($user_id, $data->intezmeny_id)) {
+        if (!$db->partOfIntezmeny($token->claims()->get("uid"), $intezmeny_id)) {
             return ControllerRet::unauthorised;
         }
 
-        $ret = $db->getClasses($data->intezmeny_id);
+        $ret = $db->getClasses($intezmeny_id);
         if (!$ret) {
             return ControllerRet::unexpected_error;
         }
@@ -398,38 +307,54 @@ class UserController
 
     function validateRefreshToken(DB $db): ControllerRet|UnencryptedToken
     {
-        if (!isset($_COOKIE["RefreshToken"]) or !is_string($_COOKIE["RefreshToken"])) {
-            return ControllerRet::bad_request;
-        }
+        if (!isset($_COOKIE["RefreshToken"]) or !is_string($_COOKIE["RefreshToken"])) return ControllerRet::bad_request;
 
         $token = $this->jwt->parseToken($_COOKIE["RefreshToken"]);
-        if ($token === null) {
-            return ControllerRet::bad_request;
-        }
+        if ($token === null) return ControllerRet::bad_request;
 
         $invalid_ids = $db->getRevokedRefreshTokens();
-        if (!$this->jwt->validateRefreshToken($token, $invalid_ids)) {
-            return ControllerRet::unauthorised;
-        }
+        if (!$this->jwt->validateRefreshToken($token, $invalid_ids)) return ControllerRet::unauthorised;
 
         return $token;
     }
 
     function validateAccessToken(): ControllerRet|UnencryptedToken
     {
-        if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) {
-            return ControllerRet::bad_request;
-        }
+        if (!isset($_COOKIE["AccessToken"]) or !is_string($_COOKIE["AccessToken"])) return ControllerRet::bad_request;
 
         $token = $this->jwt->parseToken($_COOKIE["AccessToken"]);
-        if ($token === null) {
-            return ControllerRet::bad_request;
-        }
+        if ($token === null) return ControllerRet::bad_request;
 
-        if (!$this->jwt->validateAccessToken($token)) {
-            return ControllerRet::unauthorised;
-        }
+        if (!$this->jwt->validateAccessToken($token)) return ControllerRet::unauthorised;
+
         return $token;
+    }
+
+    // This function handles the case where $number is undefined
+    // It's expected that $number is passed in with the "@" stfu operator
+    function validateInteger(mixed $number, int|null $max_digits = null): int|null
+    {
+        if (!isset($number) or !is_string($number) or !is_numeric($number)) return null;
+        if ($max_digits !== null and strlen($number) > $max_digits) return null;
+        $int = intval($number);
+        if (($int >= PHP_INT_MAX and $number !== strval(PHP_INT_MAX)) or ($int === 0 and $number !== "0")) return null;
+        return $int;
+    }
+
+    // This function handles the case where $string is undefined
+    // It's expected that $string is passed in with the "@" stfu operator
+    function validateString(mixed $string, int $min_chars = 1, int|null $max_chars = null): string|null
+    {
+        if (!isset($string) or !is_string($string) or strlen($string) < $min_chars or ($max_chars !== null and strlen($string) > $max_chars)) return null;
+        return (string) $string;
+    }
+
+    // This function handles the case where $email is undefined
+    // It's expected that $email is passed in with the "@" stfu operator
+    function validateEmail(mixed $email): string|null
+    {
+        if (!isset($email) or !is_string($email) or !preg_match('/^[^@]+[@]+[^@]+$/', $email)) return null;
+        return (string) $email;
     }
 }
 
