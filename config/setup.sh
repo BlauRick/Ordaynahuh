@@ -39,6 +39,7 @@ sudo mv filer.key /etc/ssl/private/
 sudo chmod a+wr /var/www/filer/
 
 sudo mariadb -u root -e "source ../db/main_db.sql"
+sudo mariadb -u root -e "use ordayna_main_db;source ../db/main_db_procedures.sql;"
 
 sudo systemctl restart nginx php8.4-fpm
 

@@ -19,7 +19,7 @@ cd "$orig_dir"
 openssl rand -out ../backend/secret.key -base64 128
 
 sudo mariadb -u root -e "source ../db/main_db.sql"
-sudo mariadb -u root -e "use ordayna_main_db;source ../db/test_data.sql;"
+sudo mariadb -u root -e "use ordayna_main_db;source ../db/main_db_procedures.sql;source ../db/test_data.sql;"
 
 printf "Make sure that the /etc/mysql/mariadb.cnf file includes the following lines:\n[mysqld]\nevent_scheduler = on\n"
 printf "If you have updated this file than run the following command: sudo systemctl restart mariadb\n"
