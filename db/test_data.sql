@@ -3,7 +3,7 @@ INSERT INTO ordayna_main_db.users (id, display_name, email, phone_number, passwo
 
 INSERT INTO ordayna_main_db.intezmeny (id, name) VALUE (300000, "tester_intezmeny_with_no_admin");
 
-INSERT INTO ordayna_main_db.intezmeny_users (intezmeny_id, users_id) VALUE (300000, 200000);
+INSERT INTO ordayna_main_db.intezmeny_users (intezmeny_id, users_id, is_admin) VALUE (300000, 200000, FALSE);
 
 INSERT INTO ordayna_main_db.intezmeny (id, name) VALUE (400000, "tester_intezmeny_with_admin");
 
