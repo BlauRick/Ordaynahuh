@@ -59,5 +59,6 @@
             </td>
         </tr>
     </table>
+    <button onclick="location.href='login.php'" id="signout_button">Kilépés</button>
     <br><button onclick="location.href='index.php'" id="home_button">home</button>
 </div>   

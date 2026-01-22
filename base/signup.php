@@ -13,4 +13,7 @@
 
     <label for="signup_display_name">Felhasználónév</label><br>
     <input type="text" id="signup_display_name"><br>
-</form></div>
+</form>
+    <p><button onclick="location.href='index.php'" id="signup_button">Regisztráció</button>
+    <button onclick="location.href='login.php'" id="to_login_button">Belépés</button></p>
+</div>

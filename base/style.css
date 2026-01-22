@@ -2,13 +2,13 @@
 body{
     background-color: ivory; 
     padding: 0px;
-    
 }
 #center_align {
-    width: 170px;
+    width: 15vw;
     margin: 0 auto;
     margin-top: 5%;
     h1{text-align: center;}
+    button{text-align: center; margin-left: 0.5vw;}
 }
 #center_align_home {
     width: 300px;
@@ -31,7 +31,7 @@ h1{text-align: center;}
     top: 0px;
     right: 0px; 
 }
-
+/*PROFILE SPECIFIC*/
 .nav{
     min-height: 100%;
     width: 100px;
@@ -58,13 +58,20 @@ h1{text-align: center;}
         width: 150px;
     }
 }
-
 table{
     width: 100%;
     #pic{text-align: center;}
 }
 table,td,tr{
     text-align: left; 
-    
-    /*border: 3px greenyellow solid;*/
 }
+/*PROFILE SPECIFIC*/
+
+/*hOMEWORK SPECIFIC*/
+.box {height: 59.5vh;}
+.box-long {height: 89vh;}
+.box-small{height: 29.5vh;}
+.box-medium{height: 35.6vh;}
+.box-smaller{height: 26.7vh;}
+.box,.box-small,.box-long,.box-medium,.box-smaller{border: 3px black solid; padding: 1.1em;}
+/*hOMEWORK SPECIFIC*/
