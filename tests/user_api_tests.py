@@ -49,64 +49,64 @@ def main():
 
 
 def createUser():
-    testEndpoint("Create user, no display name", "POST", "/create_user", "",
+    testEndpoint("Create user, no display name", "POST", "/user/create_user", "",
                  {"email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, display name empty", "POST", "/create_user", "",
+    testEndpoint("Create user, display name empty", "POST", "/user/create_user", "",
                  {"disp_name": "", "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, display name length longer than 200", "POST", "/create_user", "",
+    testEndpoint("Create user, display name length longer than 200", "POST", "/user/create_user", "",
                  {"disp_name": "tester" * 40, "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, display name not string", "POST", "/create_user", "",
+    testEndpoint("Create user, display name not string", "POST", "/user/create_user", "",
                  {"disp_name": ["tester"], "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, no email", "POST", "/create_user", "",
+    testEndpoint("Create user, no email", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, email empty", "POST", "/create_user", "",
+    testEndpoint("Create user, email empty", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, email not string", "POST", "/create_user", "",
+    testEndpoint("Create user, email not string", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": ["tester@test.com"], "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, email length longer than 254", "POST", "/create_user", "",
+    testEndpoint("Create user, email length longer than 254", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com" * 30, "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, with no @", "POST", "/create_user", "",
+    testEndpoint("Create user, with no @", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "testertest.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, no password", "POST", "/create_user", "",
+    testEndpoint("Create user, no password", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345"},
                  400, "Bad request")
-    testEndpoint("Create user, password not string", "POST", "/create_user", "",
+    testEndpoint("Create user, password not string", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345", "pass": ["tester_pass"]},
                  400, "Bad request")
-    testEndpoint("Create user, password length not at least 8", "POST", "/create_user", "",
+    testEndpoint("Create user, password length not at least 8", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_"},
                  400, "Bad request")
-    testEndpoint("Create user, no phone number", "POST", "/create_user", "",
+    testEndpoint("Create user, no phone number", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester_no_phone@test.com", "pass": "tester_pass"},
                  201, "")
-    testEndpoint("Create user, phone number empty", "POST", "/create_user", "",
+    testEndpoint("Create user, phone number empty", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, phone number not string", "POST", "/create_user", "",
+    testEndpoint("Create user, phone number not string", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": ["123456789012345"], "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, phone number is not numeric", "POST", "/create_user", "",
+    testEndpoint("Create user, phone number is not numeric", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "12345678901234a", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, phone number length longer than 15", "POST", "/create_user", "",
+    testEndpoint("Create user, phone number length longer than 15", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "1234567890123456", "pass": "tester_pass"},
                  400, "Bad request")
-    testEndpoint("Create user, method is not POST", "PATCH", "/create_user", "",
+    testEndpoint("Create user, method is not POST", "PATCH", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  405, "")
-    testEndpoint("Create user", "POST", "/create_user", "",
+    testEndpoint("Create user", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  201, "")
-    testEndpoint("Create user, user already exists", "POST", "/create_user", "",
+    testEndpoint("Create user, user already exists", "POST", "/user/create_user", "",
                  {"disp_name": "tester", "email": "tester@test.com", "phone_number": "123456789012345", "pass": "tester_pass"},
                  400, "User already exists")
 
@@ -172,57 +172,57 @@ def changeUserData():
     global access_jar
     global wrong_access_jar
 
-    testEndpoint("Change display name", "POST", "/change_disp_name", access_jar,
+    testEndpoint("Change display name", "POST", "/user/change_disp_name", access_jar,
                  {"new_disp_name": "testerer"}, 204, "")
-    testEndpoint("Change display name, no new display name", "POST", "/change_disp_name", access_jar,
+    testEndpoint("Change display name, no new display name", "POST", "/user/change_disp_name", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Change display name, new display name empty", "POST", "/change_disp_name", access_jar,
+    testEndpoint("Change display name, new display name empty", "POST", "/user/change_disp_name", access_jar,
                  {"new_disp_name": ""}, 400, "Bad request")
-    testEndpoint("Change display name, new display name not string", "POST", "/change_disp_name", access_jar,
+    testEndpoint("Change display name, new display name not string", "POST", "/user/change_disp_name", access_jar,
                  {"new_disp_name": ["testerer"]}, 400, "Bad request")
-    testEndpoint("Change display name, new display name length longer than 200", "POST", "/change_disp_name", access_jar,
+    testEndpoint("Change display name, new display name length longer than 200", "POST", "/user/change_disp_name", access_jar,
                  {"new_disp_name": "testerer" * 25 + "+"}, 400, "Bad request")
-    testEndpoint("Change display name, wrong token", "POST", "/change_disp_name", wrong_access_jar,
+    testEndpoint("Change display name, wrong token", "POST", "/user/change_disp_name", wrong_access_jar,
                  {"new_disp_name": "testerer"}, 403, "Unauthorised")
-    testEndpoint("Change display name, no token", "POST", "/change_disp_name", "",
+    testEndpoint("Change display name, no token", "POST", "/user/change_disp_name", "",
                  {"new_disp_name": "testerer"}, 400, "Bad request")
-    testEndpoint("Change display name, method is not POST", "PATCH", "/change_disp_name", access_jar,
+    testEndpoint("Change display name, method is not POST", "PATCH", "/user/change_disp_name", access_jar,
                  {"new_disp_name": "testerer"}, 405, "")
 
-    testEndpoint("Change phone number", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number", "POST", "/user/change_phone_number", access_jar,
                  {"new_phone_number": "12345"}, 204, "")
-    testEndpoint("Change phone number, no new phone number", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, no new phone number", "POST", "/user/change_phone_number", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Change phone number, new phone number empty", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, new phone number empty", "POST", "/user/change_phone_number", access_jar,
                  {"new_phone_number": ""}, 400, "Bad request")
-    testEndpoint("Change phone number, new phone number not string", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, new phone number not string", "POST", "/user/change_phone_number", access_jar,
                  {"new_phone_number": ["12345"]}, 400, "Bad request")
-    testEndpoint("Change phone number, new phone number not numeric", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, new phone number not numeric", "POST", "/user/change_phone_number", access_jar,
                  {"new_phone_number": "12345a"}, 400, "Bad request")
-    testEndpoint("Change phone number, new phone number length longer than 15", "POST", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, new phone number length longer than 15", "POST", "/user/change_phone_number", access_jar,
                  {"new_phone_number": "12345" * 3 + "+"}, 400, "Bad request")
-    testEndpoint("Change phone number, wrong token", "POST", "/change_phone_number", wrong_access_jar,
+    testEndpoint("Change phone number, wrong token", "POST", "/user/change_phone_number", wrong_access_jar,
                  {"new_phone_number": "12345"}, 403, "Unauthorised")
-    testEndpoint("Change phone number, no token", "POST", "/change_phone_number", "",
+    testEndpoint("Change phone number, no token", "POST", "/user/change_phone_number", "",
                  {"new_phone_number": "12345"}, 400, "Bad request")
-    testEndpoint("Change phone number, method is not POST", "PATCH", "/change_phone_number", access_jar,
+    testEndpoint("Change phone number, method is not POST", "PATCH", "/user/change_phone_number", access_jar,
                  {"new_phone_number": "12345"}, 405, "")
 
-    testEndpoint("Change password", "POST", "/change_pass", access_jar,
+    testEndpoint("Change password", "POST", "/user/change_pass", access_jar,
                  {"new_pass": "tmp_tester_pass"}, 204, "")
-    testEndpoint("Change password back", "POST", "/change_pass", access_jar,
+    testEndpoint("Change password back", "POST", "/user/change_pass", access_jar,
                  {"new_pass": "tester_pass"}, 204, "")
-    testEndpoint("Change password, no new password", "POST", "/change_pass", access_jar,
+    testEndpoint("Change password, no new password", "POST", "/user/change_pass", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Change password, new password not string", "POST", "/change_pass", access_jar,
+    testEndpoint("Change password, new password not string", "POST", "/user/change_pass", access_jar,
                  {"new_pass": ["tester_pass"]}, 400, "Bad request")
-    testEndpoint("Change password, new password length no at least 8", "POST", "/change_pass", access_jar,
+    testEndpoint("Change password, new password length no at least 8", "POST", "/user/change_pass", access_jar,
                  {"new_pass": "tester_"}, 400, "Bad request")
-    testEndpoint("Change password", "POST", "/change_pass", wrong_access_jar,
+    testEndpoint("Change password", "POST", "/user/change_pass", wrong_access_jar,
                  {"new_pass": "tester_pass"}, 403, "Unauthorised")
-    testEndpoint("Change password, no token", "POST", "/change_pass", "",
+    testEndpoint("Change password, no token", "POST", "/user/change_pass", "",
                  {"new_pass": "tester_pass"}, 400, "Bad request")
-    testEndpoint("Change password, method is not POST", "PATCH", "/change_pass", access_jar,
+    testEndpoint("Change password, method is not POST", "PATCH", "/user/change_pass", access_jar,
                  {"new_pass": "tester_pass"}, 405, "")
 
 
@@ -263,166 +263,166 @@ def getEndpoints():
     testEndpoint("Get intezmenys, method is not GET", "PATCH", "/get_intezmenys", access_jar,
                  {}, 405, "")
 
-    testEndpoint("Get classes", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes", "POST", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get classes, intezmeny does not exist", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes, intezmeny does not exist", "POST", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get classes, intezmeny id out of representable range of int", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes, intezmeny id out of representable range of int", "POST", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get classes, no intezmeny id", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes, no intezmeny id", "POST", "/intezmeny/get_classes", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get classes, intezmeny id empty", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes, intezmeny id empty", "POST", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get classes, intezmeny id is not numeric", "POST", "/get_classes", access_jar,
+    testEndpoint("Get classes, intezmeny id is not numeric", "POST", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get classes, wrong token", "POST", "/get_classes", wrong_access_jar,
+    testEndpoint("Get classes, wrong token", "POST", "/intezmeny/get_classes", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get classes, no token", "POST", "/get_classes", "",
+    testEndpoint("Get classes, no token", "POST", "/intezmeny/get_classes", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get classes, method not POST", "PATCH", "/get_classes", access_jar,
+    testEndpoint("Get classes, method not POST", "PATCH", "/intezmeny/get_classes", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get lessons", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons", "POST", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get lessons, intezmeny does not exist", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, intezmeny does not exist", "POST", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get lessons, intezmeny id out of representable range of int", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, intezmeny id out of representable range of int", "POST", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get lessons, no intezmeny id", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, no intezmeny id", "POST", "/intezmeny/get_lessons", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get lessons, intezmeny id empty", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, intezmeny id empty", "POST", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get lessons, intezmeny id is not numeric", "POST", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, intezmeny id is not numeric", "POST", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get lessons, wrong token", "POST", "/get_lessons", wrong_access_jar,
+    testEndpoint("Get lessons, wrong token", "POST", "/intezmeny/get_lessons", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get lessons, no token", "POST", "/get_lessons", "",
+    testEndpoint("Get lessons, no token", "POST", "/intezmeny/get_lessons", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get lessons, method not POST", "PATCH", "/get_lessons", access_jar,
+    testEndpoint("Get lessons, method not POST", "PATCH", "/intezmeny/get_lessons", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get groups", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups", "POST", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get groups, intezmeny does not exist", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups, intezmeny does not exist", "POST", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get groups, intezmeny id out of representable range of int", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups, intezmeny id out of representable range of int", "POST", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get groups, no intezmeny id", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups, no intezmeny id", "POST", "/intezmeny/get_groups", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get groups, intezmeny id empty", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups, intezmeny id empty", "POST", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get groups, intezmeny id is not numeric", "POST", "/get_groups", access_jar,
+    testEndpoint("Get groups, intezmeny id is not numeric", "POST", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get groups, wrong token", "POST", "/get_groups", wrong_access_jar,
+    testEndpoint("Get groups, wrong token", "POST", "/intezmeny/get_groups", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get groups, no token", "POST", "/get_groups", "",
+    testEndpoint("Get groups, no token", "POST", "/intezmeny/get_groups", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get groups, method not POST", "PATCH", "/get_groups", access_jar,
+    testEndpoint("Get groups, method not POST", "PATCH", "/intezmeny/get_groups", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get rooms", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms", "POST", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get rooms, intezmeny does not exist", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, intezmeny does not exist", "POST", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get rooms, intezmeny id out of representable range of int", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, intezmeny id out of representable range of int", "POST", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get rooms, no intezmeny id", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, no intezmeny id", "POST", "/intezmeny/get_rooms", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get rooms, intezmeny id empty", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, intezmeny id empty", "POST", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get rooms, intezmeny id is not numeric", "POST", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, intezmeny id is not numeric", "POST", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get rooms, wrong token", "POST", "/get_rooms", wrong_access_jar,
+    testEndpoint("Get rooms, wrong token", "POST", "/intezmeny/get_rooms", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get rooms, no token", "POST", "/get_rooms", "",
+    testEndpoint("Get rooms, no token", "POST", "/intezmeny/get_rooms", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get rooms, method not POST", "PATCH", "/get_rooms", access_jar,
+    testEndpoint("Get rooms, method not POST", "PATCH", "/intezmeny/get_rooms", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get teachers", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers", "POST", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get teachers, intezmeny does not exist", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, intezmeny does not exist", "POST", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get teachers, intezmeny id out of representable range of int", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, intezmeny id out of representable range of int", "POST", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get teachers, no intezmeny id", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, no intezmeny id", "POST", "/intezmeny/get_teachers", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get teachers, intezmeny id empty", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, intezmeny id empty", "POST", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get teachers, intezmeny id is not numeric", "POST", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, intezmeny id is not numeric", "POST", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get teachers, wrong token", "POST", "/get_teachers", wrong_access_jar,
+    testEndpoint("Get teachers, wrong token", "POST", "/intezmeny/get_teachers", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get teachers, no token", "POST", "/get_teachers", "",
+    testEndpoint("Get teachers, no token", "POST", "/intezmeny/get_teachers", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get teachers, method not POST", "PATCH", "/get_teachers", access_jar,
+    testEndpoint("Get teachers, method not POST", "PATCH", "/intezmeny/get_teachers", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get timetable", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable", "POST", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get timetable, intezmeny does not exist", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, intezmeny does not exist", "POST", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get timetable, intezmeny id out of representable range of int", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, intezmeny id out of representable range of int", "POST", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get timetable, no intezmeny id", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, no intezmeny id", "POST", "/intezmeny/get_timetable", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get timetable, intezmeny id empty", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, intezmeny id empty", "POST", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get timetable, intezmeny id is not numeric", "POST", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, intezmeny id is not numeric", "POST", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get timetable, wrong token", "POST", "/get_timetable", wrong_access_jar,
+    testEndpoint("Get timetable, wrong token", "POST", "/intezmeny/get_timetable", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get timetable, no token", "POST", "/get_timetable", "",
+    testEndpoint("Get timetable, no token", "POST", "/intezmeny/get_timetable", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get timetable, method not POST", "PATCH", "/get_timetable", access_jar,
+    testEndpoint("Get timetable, method not POST", "PATCH", "/intezmeny/get_timetable", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get homeworks", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks", "POST", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 200, "[]")
-    testEndpoint("Get homeworks, intezmeny does not exist", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, intezmeny does not exist", "POST", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": "347653267853"}, 403, "Unauthorised")
-    testEndpoint("Get homeworks, intezmeny id out of representable range of int", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, intezmeny id out of representable range of int", "POST", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": "3476532678537834698573463247856326578324685268734578635734278298673426324568325634256"}, 400, "Bad request")
-    testEndpoint("Get homeworks, no intezmeny id", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, no intezmeny id", "POST", "/intezmeny/get_homeworks", access_jar,
                  {}, 400, "Bad request")
-    testEndpoint("Get homeworks, intezmeny id empty", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, intezmeny id empty", "POST", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": ""}, 400, "Bad request")
-    testEndpoint("Get homeworks, intezmeny id is not numeric", "POST", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, intezmeny id is not numeric", "POST", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a"}, 400, "Bad request")
-    testEndpoint("Get homeworks, wrong token", "POST", "/get_homeworks", wrong_access_jar,
+    testEndpoint("Get homeworks, wrong token", "POST", "/intezmeny/get_homeworks", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 403, "Unauthorised")
-    testEndpoint("Get homeworks, no token", "POST", "/get_homeworks", "",
+    testEndpoint("Get homeworks, no token", "POST", "/intezmeny/get_homeworks", "",
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get homeworks, method not POST", "PATCH", "/get_homeworks", access_jar,
+    testEndpoint("Get homeworks, method not POST", "PATCH", "/intezmeny/get_homeworks", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 405, "")
 
-    testEndpoint("Get attachments", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "0"}, 200, "[]")
-    testEndpoint("Get attachments, intezmeny does not exist", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, intezmeny does not exist", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": "347653267853", "homework_id": "0"}, 403, "Unauthorised")
-    testEndpoint("Get attachments, intezmeny id out of representable range of int", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, intezmeny id out of representable range of int", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": "34765326785" * 25, "homework_id": "0"}, 400, "Bad request")
-    testEndpoint("Get attachments, no intezmeny id", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, no intezmeny id", "POST", "/intezmeny/get_attachments", access_jar,
                  {"homework_id": "0"}, 400, "Bad request")
-    testEndpoint("Get attachments, intezmeny id empty", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, intezmeny id empty", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": "", "homework_id": "0"}, 400, "Bad request")
-    testEndpoint("Get attachments, intezmeny id is not numeric", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, intezmeny id is not numeric", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}a", "homework_id": "0"}, 400, "Bad request")
-    testEndpoint("Get attachments, homework does not exist", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, homework does not exist", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "25327823"}, 400, "Bad request")
-    testEndpoint("Get attachments, homework id out of representable range of int", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, homework id out of representable range of int", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "7259345518397" * 25}, 400, "Bad request")
-    testEndpoint("Get attachments, no homework id", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, no homework id", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}"}, 400, "Bad request")
-    testEndpoint("Get attachments, homework id empty", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, homework id empty", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": ""}, 400, "Bad request")
-    testEndpoint("Get attachments, intezmeny id is not numeric", "POST", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, intezmeny id is not numeric", "POST", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "0a"}, 400, "Bad request")
-    testEndpoint("Get attachments, wrong token", "POST", "/get_attachments", wrong_access_jar,
+    testEndpoint("Get attachments, wrong token", "POST", "/intezmeny/get_attachments", wrong_access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "0"}, 403, "Unauthorised")
-    testEndpoint("Get attachments, no token", "POST", "/get_attachments", "",
+    testEndpoint("Get attachments, no token", "POST", "/intezmeny/get_attachments", "",
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "0"}, 400, "Bad request")
-    testEndpoint("Get attachments, method not POST", "PATCH", "/get_attachments", access_jar,
+    testEndpoint("Get attachments, method not POST", "PATCH", "/intezmeny/get_attachments", access_jar,
                  {"intezmeny_id": f"{intezmeny_id}", "homework_id": "0"}, 405, "")
 
 
@@ -457,11 +457,11 @@ def deleteUser():
     global access_jar
     global wrong_access_jar
 
-    testEndpoint("Delete user, wrong token", "DELETE", "/delete_user", wrong_access_jar, {}, 403, "Unauthorised")
-    testEndpoint("Delete user, no token", "DELETE", "/delete_user", "", {}, 400, "Bad request")
-    testEndpoint("Delete user, method is not DELETE", "PATCH", "/delete_user", access_jar, {}, 405, "")
-    testEndpoint("Delete user", "DELETE", "/delete_user", access_jar, {}, 204, "")
-    testEndpoint("Delete user, user does not exist", "DELETE", "/delete_user", access_jar, {}, 400, "User does not exist")
+    testEndpoint("Delete user, wrong token", "DELETE", "/user/delete_user", wrong_access_jar, {}, 403, "Unauthorised")
+    testEndpoint("Delete user, no token", "DELETE", "/user/delete_user", "", {}, 400, "Bad request")
+    testEndpoint("Delete user, method is not DELETE", "PATCH", "/user/delete_user", access_jar, {}, 405, "")
+    testEndpoint("Delete user", "DELETE", "/user/delete_user", access_jar, {}, 204, "")
+    testEndpoint("Delete user, user does not exist", "DELETE", "/user/delete_user", access_jar, {}, 400, "User does not exist")
 
 
 def cleanup():
@@ -471,7 +471,7 @@ def cleanup():
     no_phone_refresh_jar = testEndpoint("Get refresh token for no phone user", "POST", "/token/get_refresh_token", "",
                  {"email": "tester_no_phone@test.com", "pass": "tester_pass"}, 200, "").cookies
     no_phone_access_jar = testEndpoint("Get access token for no phone user", "POST", "/token/get_access_token", no_phone_refresh_jar, {}, 200, "").cookies
-    testEndpoint("Delete no phone number user", "DELETE", "/delete_user", no_phone_access_jar, {}, 204, "")
+    testEndpoint("Delete no phone number user", "DELETE", "/user/delete_user", no_phone_access_jar, {}, 204, "")
 
 
 main()

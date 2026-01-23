@@ -84,40 +84,54 @@ switch ($req_uri[1]) {
         }
         handleReturn($res);
         break;
-    case "create_user":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
+    case "user":
+        if (count($req_uri) <= 2) {
+            http_response_code(404);
             break;
         }
-        handleReturn($user_controller->createUser());
-        break;
-    case "delete_user":
-        if ($_SERVER["REQUEST_METHOD"] != "DELETE") {
-            http_response_code(405);
-            break;
+
+        $res;
+        switch ($req_uri[2]) {
+            case "create_user":
+                if ($_SERVER["REQUEST_METHOD"] != "POST") {
+                    http_response_code(405);
+                    break;
+                }
+                $res = $user_controller->createUser();
+                break;
+            case "delete_user":
+                if ($_SERVER["REQUEST_METHOD"] != "DELETE") {
+                    http_response_code(405);
+                    break;
+                }
+                $res = $user_controller->deleteUser();
+                break;
+            case "change_disp_name":
+                if ($_SERVER["REQUEST_METHOD"] != "POST") {
+                    http_response_code(405);
+                    break;
+                }
+                $res = $user_controller->changeDisplayName();
+                break;
+            case "change_phone_number":
+                if ($_SERVER["REQUEST_METHOD"] != "POST") {
+                    http_response_code(405);
+                    break;
+                }
+                $res = $user_controller->changePhoneNumber();
+                break;
+            case "change_pass":
+                if ($_SERVER["REQUEST_METHOD"] != "POST") {
+                    http_response_code(405);
+                    break;
+                }
+                $res = $user_controller->changePassword();
+                break;
+            default:
+                http_response_code(404);
+                return;
         }
-        handleReturn($user_controller->deleteUser());
-        break;
-    case "change_disp_name":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->changeDisplayName());
-        break;
-    case "change_phone_number":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->changePhoneNumber());
-        break;
-    case "change_pass":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->changePassword());
+        handleReturn($res);
         break;
     case "create_intezmeny":
         if ($_SERVER["REQUEST_METHOD"] != "POST") {
@@ -140,61 +154,47 @@ switch ($req_uri[1]) {
         }
         handleReturn($user_controller->getIntezmenys());
         break;
-    case "get_classes":
+    case "intezmeny":
+        if (count($req_uri) <= 2) {
+            http_response_code(404);
+            break;
+        }
         if ($_SERVER["REQUEST_METHOD"] != "POST") {
             http_response_code(405);
             break;
         }
-        handleReturn($user_controller->getClasses());
-        break;
-    case "get_groups":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
+
+        $res;
+        switch ($req_uri[2]) {
+            case "get_classes":
+                $res = $user_controller->getClasses();
+                break;
+            case "get_groups":
+                $res = $user_controller->getGroups();
+                break;
+            case "get_lessons":
+                $res = $user_controller->getLessons();
+                break;
+            case "get_rooms":
+                $res = $user_controller->getRooms();
+                break;
+            case "get_teachers":
+                $res = $user_controller->getTeachers();
+                break;
+            case "get_timetable":
+                $res = $user_controller->getTimetable();
+                break;
+            case "get_homeworks":
+                $res = $user_controller->getHomeworks();
+                break;
+            case "get_attachments":
+                $res = $user_controller->getAttachments();
+                break;
+            default:
+                http_response_code(404);
+                return;
         }
-        handleReturn($user_controller->getGroups());
-        break;
-    case "get_lessons":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getLessons());
-        break;
-    case "get_rooms":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getRooms());
-        break;
-    case "get_teachers":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getTeachers());
-        break;
-    case "get_timetable":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getTimetable());
-        break;
-    case "get_homeworks":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getHomeworks());
-        break;
-    case "get_attachments":
-        if ($_SERVER["REQUEST_METHOD"] != "POST") {
-            http_response_code(405);
-            break;
-        }
-        handleReturn($user_controller->getAttachments());
+        handleReturn($res);
         break;
     default:
         http_response_code(404);
