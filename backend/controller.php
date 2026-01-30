@@ -4,6 +4,8 @@ declare(strict_types=1);
 // TODO: Rewrite getAllUsers
 
 static $is_test_server = php_sapi_name() === "cli-server";
+/** 20 mebibytes */
+static $max_file_size = 1024 * 1024 * 20;
 
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\UnencryptedToken;
@@ -129,12 +131,9 @@ class UserController
         if ($email === null) return ControllerRet::bad_request;
         $pass = $this->validateString(@$data->pass, min_chars: 8);
         if ($pass === null) return ControllerRet::bad_request;
-
-        $phone_number = null;
-        if (isset($data->phone_number)) {
-            $phone_number = $this->validateInteger(@$data->phone_number, 15);
-            if ($phone_number === null) return ControllerRet::bad_request;
-        }
+        $phone_number = $this->validatePhoneNumber(@$data->phone_number, true);
+        if ($phone_number === null) return ControllerRet::bad_request;
+        if ($phone_number === false) $phone_number = null;
 
         $db = new DB();
 
@@ -186,7 +185,7 @@ class UserController
     public function changePhoneNumber(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        $new_phone_number = $this->validateInteger(@$data->new_phone_number, 15);
+        $new_phone_number = $this->validatePhoneNumber(@$data->new_phone_number, false);
         if ($new_phone_number === null) return ControllerRet::bad_request;
 
         $token = $this->validateAccessToken();
@@ -233,7 +232,7 @@ class UserController
 
         if (!$db->userExistsViaId($token->claims()->get("uid"))) return ControllerRet::user_does_not_exist;
 
-        if (! $db->createIntezmeny($intezmeny_name, $token->claims()->get("uid"))) return ControllerRet::unexpected_error;
+        if (!$db->createIntezmeny($intezmeny_name, $token->claims()->get("uid"))) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_created;
     }
@@ -253,6 +252,7 @@ class UserController
         if (!$db->partOfIntezmeny($token->claims()->get("uid"), $intezmeny_id)) return ControllerRet::unauthorised;
 
         if (!$db->deleteIntezmeny($intezmeny_id)) return ControllerRet::unexpected_error;
+        if (rmdirRecursive("user_data/intezmeny_$intezmeny_id") === false) return ControllerRet::unexpected_error;
 
         return ControllerRet::success_no_content;
     }
@@ -275,6 +275,183 @@ class UserController
         return ControllerRet::success;
     }
 
+    public function createClass(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $name = $this->validateString(@$data->name, max_chars: 200);
+        if ($name === null) return ControllerRet::bad_request;
+        $headcount = $this->validateInteger(@$data->headcount, 5);
+        if ($headcount === null) return ControllerRet::bad_request;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if ($db->classExistsViaName($intezmeny_id, $name)) return ControllerRet::bad_request;
+
+        $ret = $db->createClass($intezmeny_id, $name, $headcount);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createLesson(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $name = $this->validateString(@$data->name, max_chars: 200);
+        if ($name === null) return ControllerRet::bad_request;
+        $ret = $this->validateGetIntezmenyData(json_decode(file_get_contents("php://input")));
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if ($db->lessonExistsViaName($intezmeny_id, $name)) return ControllerRet::bad_request;
+
+        $ret = $db->createLesson($intezmeny_id, $name);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createGroup(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $name = $this->validateString(@$data->name, max_chars: 200);
+        if ($name === null) return ControllerRet::bad_request;
+        $headcount = $this->validateInteger(@$data->headcount, 5);
+        if ($headcount === null) return ControllerRet::bad_request;
+        $class_id = $this->validateInteger(@$data->class_id, null_allowed: true);
+        if ($class_id === null) return ControllerRet::bad_request;
+        if ($class_id === false) $class_id = null;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if ($class_id !== null and !$db->classExists($intezmeny_id, $class_id)) return ControllerRet::bad_request;
+        if ($db->groupExistsViaName($intezmeny_id, $name)) return ControllerRet::bad_request;
+
+        $ret = $db->createGroup($intezmeny_id, $name, $headcount, $class_id);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createRoom(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $name = $this->validateString(@$data->name, max_chars: 200);
+        if ($name === null) return ControllerRet::bad_request;
+        $type = $this->validateString(@$data->type, max_chars: 200, null_allowed: true);
+        if ($type === null) return ControllerRet::bad_request;
+        if ($type === false) $type = null;
+        $space = $this->validateInteger(@$data->space, 5);
+        if ($space === null) return ControllerRet::bad_request;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if ($db->roomExistsViaName($intezmeny_id, $name)) return ControllerRet::bad_request;
+
+        $ret = $db->createRoom($intezmeny_id, $name, $type, $space);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createTeacher(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $name = $this->validateString(@$data->name, max_chars: 200);
+        if ($name === null) return ControllerRet::bad_request;
+        $job = $this->validateString(@$data->job, max_chars: 200);
+        if ($job === null) return ControllerRet::bad_request;
+        $email = $this->validateEmail(@$data->email, true);
+        if ($email === null) return ControllerRet::bad_request;
+        if ($email === false) $email = null;
+        $phone_number = $this->validatePhoneNumber(@$data->phone_number, true);
+        if ($phone_number === null) return ControllerRet::bad_request;
+        if ($phone_number === false) $phone_number = null;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->createTeacher($intezmeny_id, $name, $job, $email, $phone_number);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createTimetableElement(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $duration = $this->validateTime(@$data->duration, time_allowed: true);
+        if ($duration === null) return ControllerRet::bad_request;
+        $day = $this->validateInteger(@$data->day);
+        if ($day === null) return ControllerRet::bad_request;
+        if ($day > 6 or $day < 0) return ControllerRet::bad_request;
+        $from = $this->validateTime(@$data->from, date_allowed: true);
+        if ($from === null) return ControllerRet::bad_request;
+        $until = $this->validateTime(@$data->until, date_allowed: true);
+        if ($until === null) return ControllerRet::bad_request;
+        if ($from->getTimestamp() > $until->getTimestamp()) return ControllerRet::bad_request;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->createTimetableElement($intezmeny_id, $duration->format("H:i:s"), $day, $from->format("Y-m-d"), $until->format("Y-m-d"));
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createHomework(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $due = $this->validateTime(@$data->due, date_allowed: true, time_allowed: true, null_allowed: true);
+        if ($due === null) return ControllerRet::bad_request;
+        if ($due === false) $due = null;
+        $lesson_id = $this->validateInteger(@$data->lesson_id, null_allowed: true);
+        if ($lesson_id === null) return ControllerRet::bad_request;
+        if ($lesson_id === false) $lesson_id = null;
+        $teacher_id = $this->validateInteger(@$data->teacher_id, null_allowed: true);
+        if ($teacher_id === null) return ControllerRet::bad_request;
+        if ($teacher_id === false) $teacher_id = null;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if ($lesson_id !== null and !$db->lessonExists($intezmeny_id, $lesson_id)) return ControllerRet::bad_request;
+        if ($teacher_id !== null and !$db->teacherExists($intezmeny_id, $teacher_id)) return ControllerRet::bad_request;
+
+        $ret = $db->createHomework($intezmeny_id, $due !== null ? $due->format("Y-m-d h:i:s") : null, $lesson_id, $teacher_id);
+        if (!$ret) return ControllerRet::unexpected_error;
+
+        return ControllerRet::success_created;
+    }
+
+    public function createAttachment(): ControllerRet
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $homework_id = $this->validateInteger(@$data->homework_id);
+        if ($homework_id === null) return ControllerRet::bad_request;
+        $file_name = $this->validateFileName(@$data->file_name);
+        if ($file_name === null) return ControllerRet::bad_request;
+        $file_contents = $this->validateFileContents(@$data->file_contents);
+        if ($file_contents === null) return ControllerRet::bad_request;
+        $ret = $this->validateGetIntezmenyData($data);
+        if (is_a($ret, "ControllerRet")) return $ret;
+        list($db, $intezmeny_id) = $ret;
+
+        if (!$db->homeworkExists($intezmeny_id, $homework_id)) return ControllerRet::bad_request;
+
+        $attachment_id = $db->createAttachment($intezmeny_id, $homework_id, $file_name);
+        if ($attachment_id === false) return ControllerRet::unexpected_error;
+        if (file_force_contents("user_data/intezmeny_$intezmeny_id/" . $file_name . "_$attachment_id", $file_contents) === false) {
+            // TODO: delete attachment from database
+            return ControllerRet::unexpected_error;
+        }
+
+        return ControllerRet::success_created;
+    }
+
     public function getClasses(): ControllerRet
     {
         $ret = $this->validateGetIntezmenyData(json_decode(file_get_contents("php://input")));
@@ -290,13 +467,13 @@ class UserController
         return ControllerRet::success;
     }
 
-    public function getGroups(): ControllerRet
+    public function getLessons(): ControllerRet
     {
         $ret = $this->validateGetIntezmenyData(json_decode(file_get_contents("php://input")));
         if (is_a($ret, "ControllerRet")) return $ret;
         list($db, $intezmeny_id) = $ret;
 
-        $ret = $db->getGroups($intezmeny_id);
+        $ret = $db->getLessons($intezmeny_id);
         if (!$ret) return ControllerRet::unexpected_error;
 
         header('Content-Type: application/json');
@@ -305,13 +482,13 @@ class UserController
         return ControllerRet::success;
     }
 
-    public function getLessons(): ControllerRet
+    public function getGroups(): ControllerRet
     {
         $ret = $this->validateGetIntezmenyData(json_decode(file_get_contents("php://input")));
         if (is_a($ret, "ControllerRet")) return $ret;
         list($db, $intezmeny_id) = $ret;
 
-        $ret = $db->getLessons($intezmeny_id);
+        $ret = $db->getGroups($intezmeny_id);
         if (!$ret) return ControllerRet::unexpected_error;
 
         header('Content-Type: application/json');
@@ -345,7 +522,7 @@ class UserController
         if (!$ret) return ControllerRet::unexpected_error;
 
         header('Content-Type: application/json');
-        echo json_encode($ret->fetch_all());
+        echo json_encode($ret);
 
         return ControllerRet::success;
     }
@@ -372,38 +549,42 @@ class UserController
         list($db, $intezmeny_id) = $ret;
 
         $ret = $db->getHomeworks($intezmeny_id);
-        if (!$ret) return ControllerRet::unexpected_error;
+        if ($ret === false) return ControllerRet::unexpected_error;
 
         header('Content-Type: application/json');
-        echo json_encode($ret->fetch_all());
+        echo json_encode($ret);
 
         return ControllerRet::success;
     }
 
-    public function getAttachments(): ControllerRet
+    public function getAttachment(): ControllerRet
     {
         $data = json_decode(file_get_contents("php://input"));
-        $homework_id = $this->validateInteger(@$data->homework_id);
-        if ($homework_id === null) return ControllerRet::bad_request;
+        $attachment_id = $this->validateInteger(@$data->attachment_id);
+        if ($attachment_id === null) return ControllerRet::bad_request;
         $ret = $this->validateGetIntezmenyData($data);
         if (is_a($ret, "ControllerRet")) return $ret;
         list($db, $intezmeny_id) = $ret;
 
-        if (!$db->homeworkExists($intezmeny_id, $homework_id)) return ControllerRet::bad_request;
+        if ($db->attachmentExists($intezmeny_id, $attachment_id) === false) return ControllerRet::bad_request;
 
-        $ret = $db->getHomeworks($intezmeny_id);
-        if (!$ret) return ControllerRet::unexpected_error;
+        $attachment_name = $db->getAttachmentName($intezmeny_id, $attachment_id);
+        if ($attachment_id === false) return ControllerRet::bad_request;
 
-        header('Content-Type: application/json');
-        echo json_encode($ret->fetch_all());
+        $file_contents = file_get_contents("user_data/intezmeny_$intezmeny_id/" . $attachment_name . "_" . $attachment_id);
+        if ($file_contents === false) return ControllerRet::unexpected_error;
+
+        header('Content-Type: application/octet-stream');
+        echo $file_contents;
 
         return ControllerRet::success;
     }
 
     /**
-    * Returns the database connection and the intezmeny's id
-    */
-    private function validateGetIntezmenyData(mixed $data): ControllerRet|array  {
+     * Returns the database connection and the intezmeny's id
+     */
+    private function validateGetIntezmenyData(mixed $data): ControllerRet|array
+    {
         $intezmeny_id = $this->validateInteger(@$data->intezmeny_id);
         if ($intezmeny_id === null) return ControllerRet::bad_request;
 
@@ -446,9 +627,17 @@ class UserController
 
     // This function handles the case where $number is undefined
     // It's expected that $number is passed in with the "@" stfu operator
-    private function validateInteger(mixed $number, int|null $max_digits = null): int|null
+    // If null is allowed and $number is null then returns false
+    private function validateInteger(mixed $number, int|null $max_digits = null, bool $null_allowed = false): int|null|false
     {
-        if (!isset($number) or !is_string($number) or !is_numeric($number)) return null;
+        if (!isset($number)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        if (!is_string($number) or !is_numeric($number)) return null;
         if ($max_digits !== null and strlen($number) > $max_digits) return null;
         $int = intval($number);
         if (($int >= PHP_INT_MAX and $number !== strval(PHP_INT_MAX)) or ($int === 0 and $number !== "0")) return null;
@@ -457,18 +646,143 @@ class UserController
 
     // This function handles the case where $string is undefined
     // It's expected that $string is passed in with the "@" stfu operator
-    private function validateString(mixed $string, int $min_chars = 1, int|null $max_chars = null): string|null
+    // If null is allowed and $string is null then returns false
+    private function validateString(mixed $string, int $min_chars = 1, int|null $max_chars = null, bool $null_allowed = false): string|null|false
     {
-        if (!isset($string) or !is_string($string) or strlen($string) < $min_chars or ($max_chars !== null and strlen($string) > $max_chars)) return null;
+        if (!isset($string)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        if (!is_string($string) or strlen($string) < $min_chars or ($max_chars !== null and strlen($string) > $max_chars)) return null;
         return (string) $string;
     }
 
     // This function handles the case where $email is undefined
     // It's expected that $email is passed in with the "@" stfu operator
-    private function validateEmail(mixed $email): string|null
+    // If null is allowed and $email is null then returns false
+    private function validateEmail(mixed $email, bool $null_allowed = false): string|null|false
     {
-        if (!isset($email) or !is_string($email) or !preg_match('/^[^@]+[@]+[^@]+$/', $email)) return null;
+        if (!isset($email)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        if (!is_string($email) or !preg_match('/^[^@]+[@]+[^@]+$/', $email)) return null;
         return (string) $email;
+    }
+
+    // This function handles the case where $phone_number is undefined
+    // It's expected that $phone_number is passed in with the "@" stfu operator
+    // If null is allowed and $phone_number is null then returns false
+    private function validatePhoneNumber(mixed $phone_number, bool $null_allowed = false): string|null|false
+    {
+        if (!isset($phone_number)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        if ($this->validateString($phone_number, max_chars: 15, null_allowed: false) === null) return null;
+        if (!is_numeric($phone_number)) return null;
+        return (string) $phone_number;
+    }
+
+
+    // This function handles the case where $time is undefined
+    // It's expected that $time is passed in with the "@" stfu operator
+    // If null is allowed and $time is null then returns false
+    private function validateTime(mixed $time, bool $date_allowed = false, $time_allowed = false, bool $null_allowed = false): DateTimeImmutable|null|false
+    {
+        if (!isset($time)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        $str_time = $this->validateString(@$time);
+        if ($str_time === null) return null;
+        if ($date_allowed and $time_allowed) {
+            try {
+                $ret = DateTimeImmutable::createFromFormat("Y-m-d H:i:s", $str_time);
+            } catch (ValueError $e) {
+                return null;
+            }
+        } else if ($date_allowed and !$time_allowed) {
+            try {
+                $ret = DateTimeImmutable::createFromFormat("Y-m-d", $str_time);
+            } catch (ValueError $e) {
+                return null;
+            }
+        } else if (!$date_allowed and $time_allowed) {
+            try {
+                $ret = DateTimeImmutable::createFromFormat("H:i:s", $str_time);
+            } catch (ValueError $e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+        if ($ret === false) return null;
+        if (DateTimeImmutable::getLastErrors() !== false) return null;
+        return $ret;
+    }
+
+    /**
+     * This function handles the case where $time is undefined
+     * It's expected that $time is passed in with the "@" stfu operator
+     * If null is allowed and $time is null then returns false
+     * https://gist.github.com/doctaphred/d01d05291546186941e1b7ddc02034d3
+     */
+    function validateFileName(mixed $file_name, bool $null_allowed = false): string|null|false
+    {
+        if (!isset($file_name)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        $str_file_name = $this->validateString($file_name, max_chars: 200);
+        if ($str_file_name === null) return null;
+        if ($str_file_name === "." or $str_file_name === "..") return null;
+        if (preg_match('^[^<>:?"*|\/\\]+$', $str_file_name)) return null;
+        if (str_ends_with(".", $str_file_name) or str_ends_with(" ", $str_file_name)) return null;
+        $blown_name = explode(".", $str_file_name);
+        if ($blown_name[0] === 'CON' or $blown_name[0] === 'PRN' or $blown_name[0] === 'AUX' or $blown_name[0] === 'NUL') return null;
+        if ($blown_name[0] === 'COM1' or $blown_name[0] === 'COM2' or $blown_name[0] === 'COM3') return null;
+        if ($blown_name[0] === 'COM4' or $blown_name[0] === 'COM5' or $blown_name[0] === 'COM6') return null;
+        if ($blown_name[0] === 'COM7' or $blown_name[0] === 'COM8' or $blown_name[0] === 'COM9') return null;
+        if ($blown_name[0] === 'LPT1' or $blown_name[0] === 'LPT2' or $blown_name[0] === 'LPT3') return null;
+        if ($blown_name[0] === 'LPT4' or $blown_name[0] === 'LPT5' or $blown_name[0] === 'LPT6') return null;
+        if ($blown_name[0] === 'LPT7' or $blown_name[0] === 'LPT8' or $blown_name[0] === 'LPT9') return null;
+        for ($i = 0; $i < strlen($str_file_name); $i++) {
+            if (ord($str_file_name[$i]) < 32) return null;
+        }
+        return $str_file_name;
+    }
+
+    function validateFileContents(mixed $file_contents, bool $null_allowed = false): string|null|false
+    {
+        global $max_file_size;
+
+        if (!isset($file_contents)) {
+            if ($null_allowed) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        $str_file_contents = $this->validateString($file_contents, min_chars: 0);
+        if ($str_file_contents === null) return null;
+        if (mb_strlen($str_file_contents, "8bit") > $max_file_size) return null;
+        return $str_file_contents;
     }
 }
 
@@ -517,4 +831,39 @@ enum ControllerRet
     case user_does_not_exist;
     case user_already_exists;
     case unexpected_error;
+}
+
+function file_force_contents(string $dir, string $contents): int|false
+{
+    $parts = explode('/', $dir);
+    $file = array_pop($parts);
+    $dir = implode("/", $parts);
+    if (is_dir($dir) === false) mkdir($dir, recursive: true);
+    try {
+        return file_put_contents("$dir/$file", $contents, LOCK_EX);
+    } catch (ValueError $e) {
+        return false;
+    }
+}
+
+/**
+ * Returns true on success and null on failure
+ */
+function rmdirRecursive(string $dir): bool
+{
+    if (is_dir($dir)) {
+        $objects = scandir($dir);
+        if ($objects === false) return false;
+        foreach ($objects as $object) {
+            if ($object !== "." && $object !== "..") {
+                if (is_dir($dir . '/' . $object) && !is_link($dir . '/' . $object)) {
+                    if (rmdirRecursive($dir . '/' . $object) === false) return false;
+                } else {
+                    if (unlink($dir . '/' . $object) === false) return false;
+                }
+            }
+        }
+        if (rmdir($dir) === false) return false;
+    }
+    return true;
 }
