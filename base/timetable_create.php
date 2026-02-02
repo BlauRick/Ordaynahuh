@@ -2,78 +2,103 @@
 <?php include 'stylesheet_call.php'?>
 <?php  ?>
 <style>
-    table{width: 90%;}
-    table, td,tr{border: 3px yellowgreen solid;}
-    .row10{height: 500px;}
+    .container {height: 90%;width: 90%;margin-left: 2%!important;}
     #classes{
-    margin: 10px;
-    position: fixed;
-    top: 20px;
-    right: 150px; 
+        margin: 10px;
+        position: fixed;
+        top: 35px;
+        right: 10px; 
+        width: 7%;
+    }
+    .listbox{width:100%; }
+    .box-md-long{height: 44.4vh;border: 3px black solid; padding: 1.1em;}
+
+    
+div{
+    min-height: fit-content!important;
+    min-width: fit-content!important;
+    word-wrap: break-word;
 }
 </style>
 
-<h1>Órarend tervező </h1> 
-<select name="class_id" id="classes">
-    <option value="a">dsasadsdsa</option>
-</select>
-<table>
-    <tr>
-        <td colspan="2">
-            Tanárok
-        </td>
-        <td colspan="2">
-            Órák
-        </td>
-        <td colspan="5">
-            Órarend
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" >
-            <div class="row10" id="teachers"><p draggable="true">aaa</p></div>
-        </td>
-        <td colspan="2" id="orak">
-            <div class="row10">ad</div>
-        </td>
-        <td colspan="5">
-            <div class="row10" id="dropbox">a</div>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="4">
-            Termek
-        </td>
-        <td id="oraszam">
-            Órák száma: <span></span>
-        </td>
-        <td colspan="4">
-            Visszajelzés
-        </td>
-    </tr>
-    <tr>
-        <td colspan="4" rowspan="3">
-            <div id="room">u8n7</div>
-        </td>
-        <td >
-            Osztály: <span></span>
-        </td>
-        <td colspan="4" rowspan="3">
-            <div id="resp">hhl</div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Nyelv: <span></span>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            Csoport: <span></span>
-        </td>
-    </tr>
-</table>
+<body onload="generateContent()">
 
+<h1>Órarend tervező </h1> 
+<select name="class_id" id="classes" >
+    
+</select>
+
+
+<div class="container ">
+    <div class="row ">
+
+        <div class="col-2">
+            <div class="box">
+                <p class="h6">Tanárok<hr></p>
+                <select name="sometext" size="16" class="listbox" id="tanar_option" onchange="addItem(this, 'tanar')">
+                    
+                </select>
+            </div>
+        </div>
+        <div class="col-2">
+            <div class="box">
+                <p class="h6">Tantárgy<hr></p>
+                <select name="sometext" size="16" class="listbox" id="tantargy_option" onchange="addItem(this, 'targy')">
+                    
+                    
+                </select>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="box" id="orarend_box">
+                <p class="h6">Órarend<hr></p>
+                <div class="box-md-long"></div>
+                <div class="input-div">
+                    <button ><-</button>
+                    <button onclick="lockData()">-></button>
+                    <input type="text" id="targy" readonly><input type="text" id="terem" readonly><input type="text" id="tanar" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row"><p></p></div>
+    <div class="row">
+        <div class="col-5 ">
+            <div class="box-small">
+                <p class="h6">Termek<hr></p>
+                <select name="sometext" size="6" class="listbox" id="terem_option" onchange="addItem(this, 'terem')">
+                    
+                </select>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="box-small">
+                <p class="h6">Órák száma: <span id="orak_szama_tc"></span><hr></p>
+                <p class="h6">Osztály: <span id="osztaly_tc"></span><hr></p>
+                <p class="h6">Nyelv: <span id="nyelv_tc"></span><hr></p>
+                <p class="h6">Csoport: <span id="csoport_tc"></span></p>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="box-small">
+                <p class="h6">Visszajelzés<hr></p>
+                <span id="err"></span>
+                
+            </div>
+        </div>
+
+    </div>
+</div>
 
 <br><button onclick="location.href='index.php'"  id="home_button">home</button>
 <button onclick="location.href='profile.php'"  id="user_button">Felhasználó</button>
+
+<script>
+        function addItem(e, z) {
+            document.getElementById(z).value = e.options[e.selectedIndex].getAttribute("value");
+        }
+    </script>
+
+
+<script src="js/time_create.js"></script>
+</body>

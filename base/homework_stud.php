@@ -46,29 +46,10 @@
             </div>
         </div>
     </div>
-    <!-- <div class="row g-2">
 
-        <div class="col-2"><div class="box-long"></div></div>
-
-        <div class="row g-2">
-
-            <div class="col-6"><div class="box"></div></div>
-
-            <div class="row g-2">
-                <div class="col-4"><div class="box"></div></div>
-                <div class="col-2"><div class="box"></div></div>
-            </div>
-            
-        </div>
-
-        <div class="col-2"><div class="box-long"></div></div>
-
-    </div>
-     -->
 
 
 </div>
-
 
 
 

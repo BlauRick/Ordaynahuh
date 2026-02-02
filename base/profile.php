@@ -1,64 +1,32 @@
 <?php include 'stylesheet_call.php'?>
+<style>
+    .container{margin-top: 5%;}
+    .box-smallest{height: 19.5vh;border: 3px black solid; padding: 1.1em;}
+    .box-tiny{height: 10.1vh;border: 3px black solid; padding: 1.1em;}
+   
+</style>
 
+<div class="container">
 
-<div class="nav">hell</div>
-<div class="profile">
-    <table>
-        <tr>
-            <td id="pic" rowspan="4"> <img src="img.png" alt="Profile pic" id="prof_pic"></td>
-            <td>
-                
-            </td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
+    <div class="col-6">
+        <div class="box-medium">
+            <div class="row rowcols-2">
+                <div class="col-4">
+                    <div class="col"><div class="box-smallest-nb" ></div></div>
+                    <div class="col"><div class="box-tiny-nb"></div></div>
+                </div>
+                <div class="col-8">
+                    <div class="col"><div class="box-small-nb"></div></div>
+                </div>
             
-            <td>
-                felhasználónév
-            </td>
-            <td>
-                <input type="text" id="felhasz">
-            </td>
-            <td>
-                [Megváltoztatás]
-            </td>
-        </tr>
-        <tr>
-            <td>
-                jelszó
-            </td>
-            <td>
-                <input type="password" id="pass">
-            </td>
-            <td>
-                [Megváltoztatás]
-            </td>
-        </tr>
-        <tr>
-            <td>
-                email
-            </td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td id="pic">
-                [Profilkép megváltoztatása]
-            </td>
-            <td>
-                telefonszám
-            </td>
-            <td>
-                <input type="tel" id="tel">
-            </td>
-            <td>
-                [Megváltoztatás]
-            </td>
-        </tr>
-    </table>
+            
+            
+</div>
+        </div>
+    </div>
+    
+            
     <button onclick="location.href='login.php'" id="signout_button">Kilépés</button>
-    <br><button onclick="location.href='index.php'" id="home_button">home</button>
+    
 </div>   
+<br><button onclick="location.href='index.php'" id="home_button">home</button>

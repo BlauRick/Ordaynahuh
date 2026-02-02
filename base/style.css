@@ -1,77 +1,51 @@
-*{font-family: sans-serif, Arial, Helvetica, sans-serif ;  }
 body{
     background-color: ivory; 
     padding: 0px;
+    text-align: center;
 }
+
+div{
+    min-height: fit-content!important;
+    min-width: fit-content!important;
+    word-wrap: break-word;
+}
+
 #center_align {
-    width: 15vw;
+    width: 170px;
     margin: 0 auto;
     margin-top: 5%;
     h1{text-align: center;}
-    button{text-align: center; margin-left: 0.5vw;}
 }
 #center_align_home {
     width: 300px;
     margin: 0 auto;
     margin-top: 5%;
 }
-#homework_button, #create_button, #display_button{height: 95px; width:  95px; }
 h1{text-align: center;}
 
+#homework_button, #create_button, #display_button{height: 95px; width:  95px; }
 #home_button{
     margin: 10px;
     position: fixed;
     bottom: 0px;
     right: 0px; 
 }
-
 #user_button{
     margin: 10px;
     position: fixed;
     top: 0px;
     right: 0px; 
 }
-/*PROFILE SPECIFIC*/
-.nav{
-    min-height: 100%;
-    width: 100px;
-    background-color: gray;
-    padding: 5px;
-    margin: 0px;
-    position: fixed;
-    top:0px;
-    left: 0px;
-    display: inline-block;
-}
-.profile{
-    border: 2px indigo solid;
-    display: inline-block;
-    position: relative;
-    width: max-content;
-    margin-left: 10px;
-    left:100px;
-    top:0px;
-    #prof_pic{
-        border: 2px black solid;
-        border-radius: 50%;
-        height: 150px;
-        width: 150px;
-    }
-}
-table{
-    width: 100%;
-    #pic{text-align: center;}
-}
-table,td,tr{
-    text-align: left; 
-}
-/*PROFILE SPECIFIC*/
 
-/*hOMEWORK SPECIFIC*/
-.box {height: 59.5vh;}
-.box-long {height: 89vh;}
-.box-small{height: 29.5vh;}
-.box-medium{height: 35.6vh;}
-.box-smaller{height: 26.7vh;}
-.box,.box-small,.box-long,.box-medium,.box-smaller{border: 3px black solid; padding: 1.1em;}
-/*hOMEWORK SPECIFIC*/
+
+
+.box, .box-nb{height: 59.5vh;}
+.box-long, .box-long-nb {height: 89vh;}
+.box-small, .box-small-nb{height: 29.5vh;}
+.box-medium, .box-medium-nb{height: 35.6vh;}
+.box-smaller, .box-smaller-nb{height: 26.7vh;}
+.box-smallest{height: 19.5vh;}
+.box-tiny{height: 10.1vh;}
+
+.box-tiny,.box-smallest,.box,.box-small,.box-long,.box-medium,.box-smaller{border: 3px black solid; padding: 1.1em;}
+.box-nb,.box-small-nb,.box-long-nb,.box-medium-nb,.box-smalle-nbr{border: 3px yellowgreen solid; padding: 1.1em;}
