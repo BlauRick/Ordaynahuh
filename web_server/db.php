@@ -740,7 +740,8 @@ class DB
             name                 VARCHAR(200) NOT NULL,
             job                  VARCHAR(200) NOT NULL,
             email                VARCHAR(254),
-            phone_number         VARCHAR(15)
+            phone_number         VARCHAR(15),
+            user_id              INT UNSIGNED
          );
 
         CREATE OR REPLACE TABLE teacher_lesson (
