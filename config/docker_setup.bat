@@ -1,7 +1,7 @@
 @echo off
 echo Make sure that docker desktop is installed
 
-cd ../backend
+cd ../web_server
 docker build . -t ordayna-backend
 echo database:3306 > database_address
 cd ../config

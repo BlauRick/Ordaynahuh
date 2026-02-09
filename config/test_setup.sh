@@ -10,13 +10,13 @@ sudo apt-get install 7zip -y
 sudo apt-get install composer -y
 
 orig_dir=$(pwd)
-cd ../backend
+cd ../web_server
 sudo composer require lcobucci/jwt lcobucci/clock
 printf "localhost" > "database_address"
 cd "$orig_dir"
 
 # Generate the random secret used for jwt hashing
-openssl rand -out ../backend/secret.key -base64 128
+openssl rand -out ../web_server/secret.key -base64 128
 
 sudo mariadb -u root -e "source ../db/main_db.sql"
 sudo mariadb -u root -e "use ordayna_main_db;source ../db/main_db_procedures.sql;source ../db/test_data.sql;"

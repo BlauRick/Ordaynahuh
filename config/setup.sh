@@ -19,7 +19,7 @@ sudo rm -f /etc/nginx/sites-enabled/ordayna
 sudo ln -s /etc/nginx/sites-available/ordayna /etc/nginx/sites-enabled/ordayna
 sudo rm -rf /var/www/ordayna
 sudo mkdir /var/www/ordayna
-sudo cp ../backend/* /var/www/ordayna/ -r
+sudo cp ../web_server/* /var/www/ordayna/ -r
 
 orig_dir=$(pwd)
 cd /var/www/ordayna
