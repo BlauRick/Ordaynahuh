@@ -7,6 +7,6 @@ INSERT INTO ordayna_main_db.intezmeny_users (intezmeny_id, users_id, role_) VALU
 
 INSERT INTO ordayna_main_db.intezmeny (id, name) VALUE (400000, "tester_intezmeny_with_admin");
 
-INSERT INTO ordayna_main_db.intezmeny_users (intezmeny_id, users_id, is_admin) VALUE (400000, 200000, TRUE);
+INSERT INTO ordayna_main_db.intezmeny_users (intezmeny_id, users_id, role_) VALUE (400000, 200000, "admin");
 
 INSERT INTO ordayna_main_db.revoked_refresh_tokens (uuid, duration) VALUE (UUID_v4(), '0 0:0:30');
