@@ -137,7 +137,12 @@ h1{
 #orarend_box{
     overflow: scroll;
     max-height: 400px;
-    
+
+}
+
+#err{
+    color: red;
+    font-weight: bolder;
 }
 
 /*.box-nb,.box-small-nb,.box-long-nb,.box-less-long,.box-medium-nb,.box-tiny-nb,.box-smallest-nb,.box-md-long-nb{border: 3px greenyellow solid;padding: 1.1em;} 

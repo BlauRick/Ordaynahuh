@@ -10,6 +10,7 @@ const room_tag = document.getElementById("terem_option");
 const clas_tag = document.getElementById("classes");
 
 const day=document.getElementById("days");
+const id=document.getElementById("get_id")
 
 const orarend = document.getElementById("orarend_box");
 
@@ -19,6 +20,11 @@ const tanar =document.getElementById('tanar');
 tanar.value="";
 const terem =document.getElementById('terem');
 terem.value="";
+
+
+const err=document.getElementById("err");
+
+err.innerHTML="";
 
 function generateContentForCreate() {
     console.log("loads")
@@ -34,6 +40,9 @@ function generateContentForCreate() {
 let db=0;
 
 function lockData(){
+    if (orarend.innerHTML.trim() !== "") {
+        id.setAttribute('max',db)
+    }
     if (terem.value!="" && tanar.value!="" && targy.value!="" ){
         curr_id="ora_"+db;
         let ora_span=document.createElement("span");
@@ -43,6 +52,7 @@ function lockData(){
         db++;
         
     }
+   
 }
 
 function addItem(e, z) {
@@ -50,6 +60,12 @@ function addItem(e, z) {
 }
 
 function deleteData(){
+    del_id=document.getElementById('ora_'+id.value);
+    if(del_id){
+        del_id.remove();
+        err.innerHTML=""
+    }else{err.innerHTML="Nincs ilyen ID elem"}
+    
     
 }
 

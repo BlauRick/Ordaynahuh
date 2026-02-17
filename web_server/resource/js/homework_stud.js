@@ -45,10 +45,12 @@ const feladatok = [
 
 const t = document.getElementById("tantargy");
 
-
 function loadClass() {
+  // tantárgyak kigyűjtése + duplikációk kiszűrése
+  const tantargyak = [...new Set(feladatok.map(f => f.tantárgy))];
 
-  const tantargyak = feladatok.map(f => f.tantárgy);
-
-  t.innerHTML = tantargyak.map(tan => `<option value="${tan}">${tan}</option>`).join("");
+  // select feltöltése
+  t.innerHTML = tantargyak
+    .map(tan => `<option value="${tan}">${tan}</option>`)
+    .join("");
 }
