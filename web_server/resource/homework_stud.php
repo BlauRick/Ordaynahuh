@@ -7,7 +7,7 @@
 /* .container{border: 3px purple solid;} */
 
 </style>
-
+<body onload="loadClass()">
 
 <h1>Házi feladat</h1>
 <div class="container" >
@@ -17,8 +17,8 @@
         <div class="col-md-2 col-sm-1" id="border">
             <div class="box-long">
                 <p class="h6">Tantárgyak<hr></p>
-                <select name="sometext" size="15" class="listbox" id="tantargy_option" onchange="loadHomework(this)">
-
+                <select name="sometext" size="26" class="listbox" id="tantargy" onchange="loadHomework(this)">
+                </select>
             </div>
         </div>
         <div class="col-md-8 co-sm-3 g-1">
@@ -52,3 +52,7 @@
 <button onclick="location.href='index.php'" id="home_button">home</button>
 <button onclick="location.href='profile.php'" id="user_button">Felhasználó</button>
 </div>
+
+
+
+<script src="homework_stud.js"></script>

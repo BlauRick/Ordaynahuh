@@ -43,3 +43,12 @@ const feladatok = [
   }
 ];
 
+const t = document.getElementById("tantargy");
+
+
+function loadClass() {
+
+  const tantargyak = feladatok.map(f => f.tantárgy);
+
+  t.innerHTML = tantargyak.map(tan => `<option value="${tan}">${tan}</option>`).join("");
+}
