@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-sudo apt-get install docker\* -y
+sudo apt-get --update install docker\* -y
 
 cd ../web_server
 sudo docker build . -t ordayna-backend
