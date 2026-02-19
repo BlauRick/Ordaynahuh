@@ -477,11 +477,54 @@ class Controller
         $until = Controller::validateTime(@$data->until, date_allowed: true);
         if ($until === null) return handleReturn(ControllerRet::bad_request);
         if ($from->getTimestamp() > $until->getTimestamp()) return handleReturn(ControllerRet::bad_request);
+        $group_id = Controller::validateInteger(@$data->group_id, null_allowed: true);
+        if ($group_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($group_id === false) $group_id = null;
+        $lesson_id = Controller::validateInteger(@$data->lesson_id, null_allowed: true);
+        if ($lesson_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($lesson_id === false) $lesson_id = null;
+        $teacher_id = Controller::validateInteger(@$data->teacher_id, null_allowed: true);
+        if ($teacher_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($teacher_id === false) $teacher_id = null;
+        $room_id = Controller::validateInteger(@$data->room_id, null_allowed: true);
+        if ($room_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($room_id === false) $room_id = null;
         $ret = Controller::validateIntezmenyData($data, true);
         if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
         list($db, $intezmeny_id) = $ret;
 
-        if ($db->createTimetableElement($intezmeny_id, $duration->format("H:i:s"), $day, $from->format("Y-m-d"), $until->format("Y-m-d")) === null) return handleReturn(ControllerRet::unexpected_error);
+        if ($group_id !== null) {
+            $ret = $db->groupExists($intezmeny_id, $group_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($lesson_id !== null) {
+            $ret = $db->lessonExists($intezmeny_id, $lesson_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($teacher_id !== null) {
+            $ret = $db->teacherExists($intezmeny_id, $teacher_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($room_id !== null) {
+            $ret = $db->roomExists($intezmeny_id, $room_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+
+        if ($db->createTimetableElement(
+            $intezmeny_id,
+            $duration->format("H:i:s"),
+            $day,
+            $from->format("Y-m-d"),
+            $until->format("Y-m-d"),
+            $group_id,
+            $lesson_id,
+            $teacher_id,
+            $room_id
+        ) === null) return handleReturn(ControllerRet::unexpected_error);
 
         return handleReturn(ControllerRet::success_created);
     }
@@ -560,7 +603,7 @@ class Controller
 
         if ($db->deleteClass($intezmeny_id, $class_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteLesson(): null
@@ -578,7 +621,7 @@ class Controller
 
         if ($db->deleteLesson($intezmeny_id, $lesson_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteGroup(): null
@@ -596,7 +639,7 @@ class Controller
 
         if ($db->deleteGroup($intezmeny_id, $group_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteRoom(): null
@@ -614,7 +657,7 @@ class Controller
 
         if ($db->deleteRoom($intezmeny_id, $room_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteTeacher(): null
@@ -632,7 +675,7 @@ class Controller
 
         if ($db->deleteTeacher($intezmeny_id, $teacher_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteTimetableElement(): null
@@ -650,7 +693,7 @@ class Controller
 
         if ($db->deleteTimetableElement($intezmeny_id, $timetable_element_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteHomework(): null
@@ -674,7 +717,7 @@ class Controller
         }
         if ($db->deleteHomework($intezmeny_id, $homework_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function deleteAttachment(): null
@@ -696,7 +739,254 @@ class Controller
         if (unlink("user_data/intezmeny_$intezmeny_id/" . $attachment_name . "_" . $attachment_id) === false) return handleReturn(ControllerRet::unexpected_error);
         if ($db->deleteAttachment($intezmeny_id, $attachment_id) === null) return handleReturn(ControllerRet::unexpected_error);
 
-        return handleReturn(ControllerRet::success);
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateClass(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $class_id = Controller::validateInteger(@$data->class_id);
+        if ($class_id === null) return handleReturn(ControllerRet::bad_request);
+        $name = Controller::validateString(@$data->name, max_chars: 200);
+        if ($name === null) return handleReturn(ControllerRet::bad_request);
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->classExists($intezmeny_id, $class_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+
+        if ($db->updateClass($intezmeny_id, $class_id, $name) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateLesson(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $lesson_id = Controller::validateInteger(@$data->lesson_id);
+        if ($lesson_id === null) return handleReturn(ControllerRet::bad_request);
+        $name = Controller::validateString(@$data->name, max_chars: 200);
+        if ($name === null) return handleReturn(ControllerRet::bad_request);
+        $ret = Controller::validateIntezmenyData(json_decode(file_get_contents("php://input")), true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->lessonExists($intezmeny_id, $lesson_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+
+        if ($db->updateLesson($intezmeny_id, $lesson_id, $name) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateGroup(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $group_id = Controller::validateInteger(@$data->group_id);
+        if ($group_id === null) return handleReturn(ControllerRet::bad_request);
+        $name = Controller::validateString(@$data->name, max_chars: 200);
+        if ($name === null) return handleReturn(ControllerRet::bad_request);
+        $headcount = Controller::validateInteger(@$data->headcount, 5);
+        if ($headcount === null) return handleReturn(ControllerRet::bad_request);
+        $class_id = Controller::validateInteger(@$data->class_id, null_allowed: true);
+        if ($class_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($class_id === false) $class_id = null;
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        if ($class_id !== null) {
+            $ret = $db->classExists($intezmeny_id, $class_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        $ret = $db->groupExists($intezmeny_id, $group_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+
+        if ($db->updateGroup($intezmeny_id, $group_id, $name, $headcount, $class_id) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateRoom(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $room_id = Controller::validateInteger(@$data->room_id);
+        if ($room_id === null) return handleReturn(ControllerRet::bad_request);
+        $name = Controller::validateString(@$data->name, max_chars: 200);
+        if ($name === null) return handleReturn(ControllerRet::bad_request);
+        $type = Controller::validateString(@$data->type, max_chars: 200, null_allowed: true);
+        if ($type === null) return handleReturn(ControllerRet::bad_request);
+        if ($type === false) $type = null;
+        $space = Controller::validateInteger(@$data->space, 5);
+        if ($space === null) return handleReturn(ControllerRet::bad_request);
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->roomExists($intezmeny_id, $room_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+
+        if ($db->updateRoom($intezmeny_id, $room_id, $name, $type, $space) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateTeacher(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $teacher_id = Controller::validateInteger(@$data->teacher_id);
+        if ($teacher_id === null) return handleReturn(ControllerRet::bad_request);
+        $name = Controller::validateString(@$data->name, max_chars: 200);
+        if ($name === null) return handleReturn(ControllerRet::bad_request);
+        $job = Controller::validateString(@$data->job, max_chars: 200);
+        if ($job === null) return handleReturn(ControllerRet::bad_request);
+        $teacher_uid = Controller::validateInteger(@$data->teacher_uid, null_allowed: true);
+        if ($teacher_uid === null) return handleReturn(ControllerRet::bad_request);
+        if ($teacher_uid === false) $teacher_uid = null;
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->teacherExists($intezmeny_id, $teacher_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+
+        if ($teacher_uid !== null) {
+            $ret = $db->partOfIntezmeny($intezmeny_id, $teacher_uid, true);
+            if ($ret === false) return handleReturn(ControllerRet::unauthorised);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+            $ret = $db->isThisTeacher($intezmeny_id, $teacher_id, $teacher_uid);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+            if ($ret === false) {
+                $ret = $db->isTeacher($intezmeny_id, $teacher_uid);
+                if ($ret === true) return handleReturn(ControllerRet::bad_request);
+                if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+            }
+        }
+
+        if ($db->updateTeacher($intezmeny_id, $teacher_id, $name, $job, $teacher_uid) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateTimetableElement(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $element_id = Controller::validateInteger(@$data->element_id);
+        if ($element_id === null) return handleReturn(ControllerRet::bad_request);
+        $duration = Controller::validateTime(@$data->duration, time_allowed: true);
+        if ($duration === null) return handleReturn(ControllerRet::bad_request);
+        $day = Controller::validateInteger(@$data->day);
+        if ($day === null) return handleReturn(ControllerRet::bad_request);
+        if ($day > 6 or $day < 0) return handleReturn(ControllerRet::bad_request);
+        $from = Controller::validateTime(@$data->from, date_allowed: true);
+        if ($from === null) return handleReturn(ControllerRet::bad_request);
+        $until = Controller::validateTime(@$data->until, date_allowed: true);
+        if ($until === null) return handleReturn(ControllerRet::bad_request);
+        if ($from->getTimestamp() > $until->getTimestamp()) return handleReturn(ControllerRet::bad_request);
+        $group_id = Controller::validateInteger(@$data->group_id, null_allowed: true);
+        if ($group_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($group_id === false) $group_id = null;
+        $lesson_id = Controller::validateInteger(@$data->lesson_id, null_allowed: true);
+        if ($lesson_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($lesson_id === false) $lesson_id = null;
+        $teacher_id = Controller::validateInteger(@$data->teacher_id, null_allowed: true);
+        if ($teacher_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($teacher_id === false) $teacher_id = null;
+        $room_id = Controller::validateInteger(@$data->room_id, null_allowed: true);
+        if ($room_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($room_id === false) $room_id = null;
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->timetableElementExists($intezmeny_id, $element_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        if ($group_id !== null) {
+            $ret = $db->groupExists($intezmeny_id, $group_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($lesson_id !== null) {
+            $ret = $db->lessonExists($intezmeny_id, $lesson_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($teacher_id !== null) {
+            $ret = $db->teacherExists($intezmeny_id, $teacher_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($room_id !== null) {
+            $ret = $db->roomExists($intezmeny_id, $room_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+
+        if ($db->updateTimetableElement(
+            $intezmeny_id,
+            $element_id,
+            $duration->format("H:i:s"),
+            $day,
+            $from->format("Y-m-d"),
+            $until->format("Y-m-d"),
+            $group_id,
+            $lesson_id,
+            $teacher_id,
+            $room_id
+        ) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
+    }
+
+    public static function updateHomework(): null
+    {
+        $data = json_decode(file_get_contents("php://input"));
+        $homework_id = Controller::validateInteger(@$data->homework_id);
+        if ($homework_id === null) return handleReturn(ControllerRet::bad_request);
+        $due = Controller::validateTime(@$data->due, date_allowed: true, time_allowed: true, null_allowed: true);
+        if ($due === null) return handleReturn(ControllerRet::bad_request);
+        if ($due === false) $due = null;
+        $lesson_id = Controller::validateInteger(@$data->lesson_id, null_allowed: true);
+        if ($lesson_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($lesson_id === false) $lesson_id = null;
+        $teacher_id = Controller::validateInteger(@$data->teacher_id, null_allowed: true);
+        if ($teacher_id === null) return handleReturn(ControllerRet::bad_request);
+        if ($teacher_id === false) $teacher_id = null;
+        $ret = Controller::validateIntezmenyData($data, true);
+        if (is_a($ret, "ControllerRet") === true) return handleReturn($ret);
+        list($db, $intezmeny_id) = $ret;
+
+        $ret = $db->homeworkExists($intezmeny_id, $homework_id);
+        if ($ret === false) return handleReturn(ControllerRet::bad_request);
+        if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        if ($lesson_id !== null) {
+            $ret = $db->lessonExists($intezmeny_id, $lesson_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+        if ($teacher_id !== null) {
+            $ret = $db->teacherExists($intezmeny_id, $teacher_id);
+            if ($ret === false) return handleReturn(ControllerRet::bad_request);
+            if ($ret === null) return handleReturn(ControllerRet::unexpected_error);
+        }
+
+        if ($db->updateHomework(
+            $intezmeny_id,
+            $homework_id,
+            $due !== null ? $due->format("Y-m-d h:i:s") : null,
+            $lesson_id,
+            $teacher_id
+        ) === null) return handleReturn(ControllerRet::unexpected_error);
+
+        return handleReturn(ControllerRet::success_no_content);
     }
 
     public static function getClasses(): null
