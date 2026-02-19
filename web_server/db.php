@@ -247,6 +247,19 @@ class DB
         }
     }
 
+    function isThisTeacher(int $intezmeny_id, int $teacher_id, int $uid): bool|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return ($ret = $this->handleQueryResult($this->connection->execute_query(
+                'SELECT EXISTS (SELECT * FROM teacher WHERE id = ? AND user_id = ?)',
+                array($teacher_id, $uid)
+            ))) === null ? null : $ret[0][0] === 1;
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
     function isTeacher(int $intezmeny_id, int $uid): bool|null
     {
         try {
@@ -479,7 +492,7 @@ class DB
         try {
             if ($this->logError($this->connection->select_db('ordayna_main_db')) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'UPDATE intezmeny_users SET invite_accepted=TRUE WHERE intezmeny_id = ? AND users_id = ?;',
+                'UPDATE intezmeny_users SET invite_accepted=TRUE WHERE intezmeny_id = ? AND users_id = ?',
                 array($intezmeny_id, $uid)
             ));
         } catch (Exception) {
@@ -492,7 +505,7 @@ class DB
         try {
             if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'CALL newClass(?, ?);',
+                'CALL newClass(?, ?)',
                 array($name, $headcount)
             ));
         } catch (Exception) {
@@ -505,7 +518,7 @@ class DB
         try {
             if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'CALL newLesson(?);',
+                'CALL newLesson(?)',
                 array($name)
             ));
         } catch (Exception) {
@@ -518,7 +531,7 @@ class DB
         try {
             if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'CALL newGroup(?, ?, ?);',
+                'CALL newGroup(?, ?, ?)',
                 array($name, $headcount, $class_id)
             ));
         } catch (Exception) {
@@ -531,7 +544,7 @@ class DB
         try {
             if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'CALL newRoom(?, ?, ?);',
+                'CALL newRoom(?, ?, ?)',
                 array($name, $type, $space)
             ));
         } catch (Exception) {
@@ -549,7 +562,7 @@ class DB
             )) === null) return null;
             if ($this->logError($this->connection->select_db('ordayna_main_db')) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'UPDATE intezmeny_users SET role_="teacher" WHERE intezmeny_id = ? AND users_id = ?;',
+                'UPDATE intezmeny_users SET role_="teacher" WHERE intezmeny_id = ? AND users_id = ?',
                 array($intezmeny_id, $uid)
             ));
         } catch (Exception) {
@@ -557,13 +570,22 @@ class DB
         }
     }
 
-    function createTimetableElement(int $intezmeny_id, string $duration, int $day, string $from, string $until): true|null
-    {
+    function createTimetableElement(
+        int $intezmeny_id,
+        string $duration,
+        int $day,
+        string $from,
+        string $until,
+        int|null $group_id,
+        int|null $lesson_id,
+        int|null $teacher_id,
+        int|null $room_id
+    ): true|null {
         try {
             if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
             return $this->handleQueryResult($this->connection->execute_query(
-                'CALL newTimetableElement(?, ?, ?, ?)',
-                array($duration, $day, $from, $until)
+                'CALL newTimetableElement(?, ?, ?, ?, ?, ?, ?, ?)',
+                array($duration, $day, $from, $until, $group_id, $lesson_id, $teacher_id, $room_id)
             ));
         } catch (Exception) {
             return $this->logError(false);
@@ -714,6 +736,127 @@ class DB
             return $this->handleQueryResult($this->connection->execute_query(
                 'CALL delAttachment(?)',
                 array($attachment_id)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateClass(int $intezmeny_id, int $class_id, string $name): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modClass(?, ?)',
+                array($class_id, $name)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateLesson(int $intezmeny_id, int $lesson_id, string $name): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modLesson(?, ?)',
+                array($lesson_id, $name)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateGroup(int $intezmeny_id, int $group_id, string $name, int $headcount, int|null $class_id): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modGroup(?, ?, ?, ?)',
+                array($group_id, $name, $headcount, $class_id)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateRoom(int $intezmeny_id, int $room_id, string $name, string|null $type, int $space): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modRoom(?, ?, ?, ?)',
+                array($room_id, $name, $type, $space)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateTeacher(int $intezmeny_id, int $teacher_id, string $name, string $job, int|null $uid): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            $original_uid = ($ret = $this->handleQueryResult($this->connection->execute_query(
+                'SELECT user_id FROM teacher WHERE id = ?',
+                array($teacher_id)
+            ))) === null ? null : $ret[0][0];
+            if ($original_uid !== $uid) {
+                if ($this->logError($this->connection->select_db('ordayna_main_db')) === null) return null;
+                if ($original_uid !== null) {
+                    if ($this->handleQueryResult($this->connection->execute_query(
+                        'UPDATE intezmeny_users SET role_="student" WHERE intezmeny_id = ? AND users_id = ?;',
+                        array($intezmeny_id, $original_uid)
+                    )) === null) return null;
+                }
+                if ($uid !== null) {
+                    if ($this->handleQueryResult($this->connection->execute_query(
+                        'UPDATE intezmeny_users SET role_="teacher" WHERE intezmeny_id = ? AND users_id = ?;',
+                        array($intezmeny_id, $uid)
+                    )) === null) return null;
+                }
+                if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            }
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modTeacher(?, ?, ?, ?)',
+                array($teacher_id, $name, $job, $uid)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateTimetableElement(
+        int $intezmeny_id,
+        int $element_id,
+        string $duration,
+        int $day,
+        string $from,
+        string $until,
+        int|null $group_id,
+        int|null $lesson_id,
+        int|null $teacher_id,
+        int|null $room_id
+    ): true|null {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modTimetableElement(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                array($element_id, $duration, $day, $from, $until, $group_id, $lesson_id, $teacher_id, $room_id)
+            ));
+        } catch (Exception) {
+            return $this->logError(false);
+        }
+    }
+
+    function updateHomework(int $intezmeny_id, int $homework_id, string|null $due, int|null $lesson_id, int|null $teacher_id): true|null
+    {
+        try {
+            if ($this->logError($this->connection->select_db('ordayna_intezmeny_' . $intezmeny_id)) === null) return null;
+            return $this->handleQueryResult($this->connection->execute_query(
+                'CALL modHomework(?, ?, ?, ?)',
+                array($homework_id, $due, $lesson_id, $teacher_id)
             ));
         } catch (Exception) {
             return $this->logError(false);
@@ -936,7 +1079,7 @@ class DB
             name                 VARCHAR(200) UNIQUE NOT NULL,
             headcount            SMALLINT UNSIGNED NOT NULL,
             class_id             INT UNSIGNED,
-            CONSTRAINT fk_group_class FOREIGN KEY ( class_id ) REFERENCES class( id ) ON DELETE SET NULL ON UPDATE NO ACTION
+            CONSTRAINT fk_group_class FOREIGN KEY ( class_id ) REFERENCES class( id ) ON DELETE SET NULL ON UPDATE CASCADE
          );
 
         CREATE OR REPLACE INDEX fk_group_class ON group_ ( class_id );
@@ -957,14 +1100,14 @@ class DB
             id                   INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             name                 VARCHAR(200) NOT NULL,
             job                  VARCHAR(200) NOT NULL,
-            user_id              INT UNSIGNED
+            user_id              INT UNSIGNED UNIQUE
          );
 
         CREATE OR REPLACE TABLE teacher_lesson (
           teacher_id INT UNSIGNED NOT NULL,
           lesson_id INT UNSIGNED NOT NULL,
-          CONSTRAINT fk_lesson_teacher FOREIGN KEY (lesson_id) REFERENCES lesson (id) ON DELETE CASCADE ON UPDATE NO ACTION,
-          CONSTRAINT fk_teacher_lesson FOREIGN KEY (teacher_id) REFERENCES teacher (id) ON DELETE CASCADE ON UPDATE NO ACTION,
+          CONSTRAINT fk_lesson_teacher FOREIGN KEY (lesson_id) REFERENCES lesson (id) ON DELETE CASCADE ON UPDATE CASCADE,
+          CONSTRAINT fk_teacher_lesson FOREIGN KEY (teacher_id) REFERENCES teacher (id) ON DELETE CASCADE ON UPDATE CASCADE,
           PRIMARY KEY (teacher_id, lesson_id)
         );
 
@@ -975,7 +1118,7 @@ class DB
             available_from_time  TIME             NOT NULL,
             available_until_day  TINYINT UNSIGNED NOT NULL,
             available_until_time TIME             NOT NULL,
-            CONSTRAINT fk_teacher_availability FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE CASCADE ON UPDATE NO ACTION
+            CONSTRAINT fk_teacher_availability FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE CASCADE ON UPDATE CASCADE
          );
 
         CREATE OR REPLACE INDEX fk_teacher_availability ON teacher_availability ( teacher_id );
@@ -994,10 +1137,10 @@ class DB
             lesson_id  INT UNSIGNED DEFAULT NULL,
             teacher_id INT UNSIGNED DEFAULT NULL,
             room_id    INT UNSIGNED DEFAULT NULL,
-            CONSTRAINT fk_timetable_group_ FOREIGN KEY ( group_id ) REFERENCES group_( id ) ON DELETE SET NULL ON UPDATE NO ACTION,
-            CONSTRAINT fk_timetable_class FOREIGN KEY ( room_id ) REFERENCES room( id ) ON DELETE SET NULL ON UPDATE NO ACTION,
-            CONSTRAINT fk_timetable_lesson FOREIGN KEY ( lesson_id ) REFERENCES lesson( id ) ON DELETE SET NULL ON UPDATE NO ACTION,
-            CONSTRAINT fk_timetable_teacher FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE SET NULL ON UPDATE NO ACTION
+            CONSTRAINT fk_timetable_group_ FOREIGN KEY ( group_id ) REFERENCES group_( id ) ON DELETE SET NULL ON UPDATE CASCADE,
+            CONSTRAINT fk_timetable_class FOREIGN KEY ( room_id ) REFERENCES room( id ) ON DELETE SET NULL ON UPDATE CASCADE,
+            CONSTRAINT fk_timetable_lesson FOREIGN KEY ( lesson_id ) REFERENCES lesson( id ) ON DELETE SET NULL ON UPDATE CASCADE,
+            CONSTRAINT fk_timetable_teacher FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE SET NULL ON UPDATE CASCADE
          );
 
         CREATE OR REPLACE INDEX fk_timetable_group ON timetable ( group_id );
@@ -1014,21 +1157,19 @@ class DB
             due           DATETIME,
             lesson_id     INT UNSIGNED,
             teacher_id    INT UNSIGNED,
-            CONSTRAINT fk_homework_lesson FOREIGN KEY ( lesson_id ) REFERENCES lesson( id ) ON DELETE SET NULL ON UPDATE NO ACTION,
-            CONSTRAINT fk_homework_teacher FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE SET NULL ON UPDATE NO ACTION
+            CONSTRAINT fk_homework_lesson FOREIGN KEY ( lesson_id ) REFERENCES lesson( id ) ON DELETE SET NULL ON UPDATE CASCADE,
+            CONSTRAINT fk_homework_teacher FOREIGN KEY ( teacher_id ) REFERENCES teacher( id ) ON DELETE SET NULL ON UPDATE CASCADE
         );
 
         CREATE OR REPLACE TABLE attachments (
             id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             homework_id INT UNSIGNED NOT NULL,
             file_name VARCHAR(200) NOT NULL,
-            CONSTRAINT fk_attachment_homework FOREIGN KEY ( homework_id ) REFERENCES homework( id ) ON DELETE CASCADE ON UPDATE NO ACTION
+            CONSTRAINT fk_attachment_homework FOREIGN KEY ( homework_id ) REFERENCES homework( id ) ON DELETE CASCADE ON UPDATE CASCADE
         );
     ';
 
     private $intezmeny_procedures = '
-        -- procedures
-
         CREATE OR REPLACE PROCEDURE newClass ( IN in_name VARCHAR(200), IN in_headcount SMALLINT UNSIGNED )
         BEGIN
             INSERT INTO class (name) VALUES (in_name);
@@ -1135,9 +1276,9 @@ class DB
             DELETE FROM teacher_availability WHERE id=in_id;
         END;
 
-        CREATE OR REPLACE PROCEDURE newTimetableElement ( IN in_duration TIME, IN in_day TINYINT UNSIGNED, IN in_from DATE, IN in_until DATE )
+        CREATE OR REPLACE PROCEDURE newTimetableElement ( IN in_duration TIME, IN in_day TINYINT UNSIGNED, IN in_from DATE, IN in_until DATE, IN in_group_id INT UNSIGNED, IN in_lesson_id INT UNSIGNED, IN in_teacher_id INT UNSIGNED, IN in_room_id INT UNSIGNED )
         BEGIN
-            INSERT INTO timetable (duration, day, from_, until) VALUES (in_duration, in_day, in_from, in_until);
+            INSERT INTO timetable (duration, day, from_, until, group_id, lesson_id, teacher_id, room_id) VALUES (in_duration, in_day, in_from, in_until, in_group_id, in_lesson_id, in_teacher_id, in_room_id);
         END;
 
         CREATE OR REPLACE PROCEDURE modTimetableElement ( IN in_id INT UNSIGNED, IN in_duration TIME, IN in_day TINYINT UNSIGNED, IN in_from DATE, IN in_until DATE, IN in_group_id INT UNSIGNED, IN in_lesson_id INT UNSIGNED, IN in_teacher_id INT UNSIGNED, IN in_room_id INT UNSIGNED )
@@ -1168,11 +1309,6 @@ class DB
         CREATE OR REPLACE PROCEDURE newAttachment ( IN in_homework_id INT UNSIGNED, IN in_file_name VARCHAR(200) )
         BEGIN
             INSERT INTO attachments (homework_id, file_name) VALUES (in_homework_id, in_file_name);
-        END;
-
-        CREATE OR REPLACE PROCEDURE modAttachment ( IN in_id INT UNSIGNED, IN in_file_name VARCHAR(200) )
-        BEGIN
-            UPDATE attachments SET file_name=in_file_name WHERE in_id=id;
         END;
 
         CREATE OR REPLACE PROCEDURE delAttachment ( IN in_id INT UNSIGNED )

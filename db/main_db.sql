@@ -26,8 +26,8 @@ CREATE OR REPLACE TABLE intezmeny_users (
 	users_id        INT UNSIGNED                      NOT NULL,
 	role_           ENUM("student","teacher","admin") NOT NULL,
 	invite_accepted BOOLEAN NOT NULL,
-	CONSTRAINT fk_intezmeny_users FOREIGN KEY ( intezmeny_id ) REFERENCES intezmeny( id ) ON DELETE CASCADE ON UPDATE NO ACTION,
-	CONSTRAINT fk_intezmeny_users_users FOREIGN KEY ( users_id ) REFERENCES users( id ) ON DELETE CASCADE ON UPDATE NO ACTION,
+	CONSTRAINT FOREIGN KEY ( intezmeny_id ) REFERENCES intezmeny( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT FOREIGN KEY ( users_id ) REFERENCES users( id ) ON DELETE CASCADE ON UPDATE CASCADE,
 	PRIMARY KEY (intezmeny_id, users_id)
  );
 
@@ -36,15 +36,11 @@ CREATE OR REPLACE TABLE revoked_refresh_tokens (
 	uid        INT UNSIGNED NOT NULL,
 	token_uuid UUID         NOT NULL,
 	created_at DATETIME     NOT NULL DEFAULT current_timestamp(),
-	duration   TIME         NOT NULL
+	duration   TIME         NOT NULL,
+	CONSTRAINT FOREIGN KEY ( uid ) REFERENCES users( id ) ON DELETE CASCADE ON UPDATE CASCADE
  );
 
 CREATE EVENT remove_token
   ON SCHEDULE EVERY 5 MINUTE DO 
    DELETE FROM revoked_refresh_tokens
 	WHERE ADDTIME(created_at, duration)<current_timestamp();
-
-
-CREATE OR REPLACE USER ordayna_main;
-
-GRANT ALL ON *.* TO ordayna_main;
